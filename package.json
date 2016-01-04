@@ -1,14 +1,12 @@
 {
   "name": "array-kit",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "An array manipulation toolbox.",
   "main": "lib/array.js",
   "directories": {
     "test": "test"
   },
-  "dependencies": {
-    "tree-kit": "^0.5.5"
-  },
+  "dependencies": {},
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jshint": "^2.5.6",
