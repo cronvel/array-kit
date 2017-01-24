@@ -1,6 +1,6 @@
 {
   "name": "array-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An array manipulation toolbox.",
   "main": "lib/array.js",
   "directories": {
@@ -27,5 +27,13 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/cronvel/array-kit/issues"
+  },
+  "copyright": {
+    "title": "Array Kit",
+    "years": [
+      2014,
+      2017
+    ],
+    "owner": "Cédric Ronvel"
   }
 }
