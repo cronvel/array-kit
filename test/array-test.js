@@ -86,7 +86,7 @@ describe( ".removeItems()" , function() {
 describe( ".delete()" , function() {
 	
 	it( "should delete one index in-place" , function() {
-		var array
+		var array ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 7 ) ;
@@ -115,6 +115,39 @@ describe( ".delete()" , function() {
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 4 ) ;
 		expect( array ).to.eql( [ 1,2,3,4 ] ) ;
+	} ) ;
+} ) ;
+
+
+
+describe( ".inPlaceConcat()" , function() {
+	
+	it( "should concat in-place" , function() {
+		var array ;
+		
+		array = [ 1,2,3,4,5 ] ;
+		arrayKit.inPlaceConcat( array , [] ) ;
+		expect( array ).to.eql( [ 1,2,3,4,5 ] ) ;
+		
+		array = [ 1,2,3,4,5 ] ;
+		arrayKit.inPlaceConcat( array , [ 6 ] ) ;
+		expect( array ).to.eql( [ 1,2,3,4,5,6 ] ) ;
+		
+		array = [ 1,2,3,4,5 ] ;
+		arrayKit.inPlaceConcat( array , [ 6,7 ] ) ;
+		expect( array ).to.eql( [ 1,2,3,4,5,6,7 ] ) ;
+		
+		array = [] ;
+		arrayKit.inPlaceConcat( array , [] ) ;
+		expect( array ).to.eql( [] ) ;
+		
+		array = [] ;
+		arrayKit.inPlaceConcat( array , [ 6 ] ) ;
+		expect( array ).to.eql( [ 6 ] ) ;
+		
+		array = [] ;
+		arrayKit.inPlaceConcat( array , [ 6,7 ] ) ;
+		expect( array ).to.eql( [ 6,7 ] ) ;
 	} ) ;
 } ) ;
 
