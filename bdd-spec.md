@@ -2,6 +2,7 @@
    - [.removeItems()](#removeitems)
    - [.delete()](#delete)
    - [.inPlaceConcat()](#inplaceconcat)
+   - [.range()](#range)
 <a name=""></a>
  
 <a name="removeitems"></a>
@@ -112,5 +113,17 @@ expect( array ).to.eql( [ 6 ] ) ;
 array = [] ;
 arrayKit.inPlaceConcat( array , [ 6,7 ] ) ;
 expect( array ).to.eql( [ 6,7 ] ) ;
+```
+
+<a name="range"></a>
+# .range()
+should create an array from a range.
+
+```js
+expect( arrayKit.range( 4 ) ).to.eql( [ 0,1,2,3 ] ) ;
+expect( arrayKit.range( 1 , 4 ) ).to.eql( [ 1,2,3 ] ) ;
+expect( arrayKit.range( 3 , 0 ) ).to.eql( [ 3,2,1 ] ) ;
+expect( arrayKit.range( 1 , 10 , 2 ) ).to.eql( [ 1,3,5,7,9 ] ) ;
+expect( arrayKit.range( 9 , 0 , -2 ) ).to.eql( [ 9,7,5,3,1 ] ) ;
 ```
 
