@@ -31,6 +31,21 @@ const arrayKit = require( '..' ) ;
 
 
 
+describe( ".inPlaceFilter()" , function() {
+	
+	it( "should filter in place" , function() {
+		var array , result ;
+		
+		array = [ 1,2,3,4,5 ] ;
+		result = arrayKit.inPlaceFilter( array , e => e % 2 ) ;
+		expect( result ).to.be( array ) ;
+		expect( array ).to.equal( [ 1,3,5 ] ) ;
+		expect( array ).to.have.length( 3 ) ;
+	} ) ;
+} ) ;
+
+
+
 describe( ".delete()" , function() {
 	
 	it( "should delete one index in-place" , function() {
