@@ -42,6 +42,25 @@ describe( ".inPlaceFilter()" , function() {
 		expect( array ).to.equal( [ 1,3,5 ] ) ;
 		expect( array ).to.have.length( 3 ) ;
 	} ) ;
+
+	it( "forced key" , function() {
+		var array , result ;
+
+		array = [ 1,2,3,4,5 ] ;
+		result = arrayKit.inPlaceFilter(
+			array ,
+			( element , key ) => {
+				expect( key ).to.be( 'key' ) ;
+				return element % 2 ;
+			} ,
+			undefined ,
+			'key'
+		) ;
+
+		expect( result ).to.be( array ) ;
+		expect( array ).to.equal( [ 1,3,5 ] ) ;
+		expect( array ).to.have.length( 3 ) ;
+	} ) ;
 } ) ;
 
 
