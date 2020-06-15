@@ -72,31 +72,74 @@ describe( ".delete()" , function() {
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 7 ) ;
-		expect( array ).to.eql( [ 1,2,3,4,5 ] ) ;
+		expect( array ).to.equal( [ 1,2,3,4,5 ] ) ;
 		arrayKit.delete( array , 6 ) ;
-		expect( array ).to.eql( [ 1,2,3,4,5 ] ) ;
+		expect( array ).to.equal( [ 1,2,3,4,5 ] ) ;
 		arrayKit.delete( array , 5 ) ;
-		expect( array ).to.eql( [ 1,2,3,4,5 ] ) ;
+		expect( array ).to.equal( [ 1,2,3,4,5 ] ) ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 0 ) ;
-		expect( array ).to.eql( [ 2,3,4,5 ] ) ;
+		expect( array ).to.equal( [ 2,3,4,5 ] ) ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 1 ) ;
-		expect( array ).to.eql( [ 1,3,4,5 ] ) ;
+		expect( array ).to.equal( [ 1,3,4,5 ] ) ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 2 ) ;
-		expect( array ).to.eql( [ 1,2,4,5 ] ) ;
+		expect( array ).to.equal( [ 1,2,4,5 ] ) ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 3 ) ;
-		expect( array ).to.eql( [ 1,2,3,5 ] ) ;
+		expect( array ).to.equal( [ 1,2,3,5 ] ) ;
 		
 		array = [ 1,2,3,4,5 ] ;
 		arrayKit.delete( array , 4 ) ;
-		expect( array ).to.eql( [ 1,2,3,4 ] ) ;
+		expect( array ).to.equal( [ 1,2,3,4 ] ) ;
+	} ) ;
+} ) ;
+
+
+
+describe( ".deleteValue()" , function() {
+	
+	it( "should delete values in-place" , function() {
+		var array ;
+		
+		array = [ 0,1,2,3,4,5 ] ;
+		arrayKit.deleteValue( array , 7 ) ;
+		expect( array ).to.equal( [ 0,1,2,3,4,5 ] ) ;
+		arrayKit.deleteValue( array , 3 ) ;
+		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
+		arrayKit.deleteValue( array , false ) ;
+		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
+		arrayKit.deleteValue( array , null ) ;
+		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
+		arrayKit.deleteValue( array , NaN ) ;
+		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
+		arrayKit.deleteValue( array , 0 ) ;
+		expect( array ).to.equal( [ 1,2,4,5 ] ) ;
+		
+		array = [ 0,1,NaN,2,3,4,5 ] ;
+		arrayKit.deleteValue( array , 7 ) ;
+		expect( array ).to.equal( [ 0,1,NaN,2,3,4,5 ] ) ;
+		arrayKit.deleteValue( array , 0 ) ;
+		expect( array ).to.equal( [ 1,NaN,2,3,4,5 ] ) ;
+		arrayKit.deleteValue( array , null ) ;
+		expect( array ).to.equal( [ 1,NaN,2,3,4,5 ] ) ;
+		arrayKit.deleteValue( array , NaN ) ;
+		expect( array ).to.equal( [ 1,2,3,4,5 ] ) ;
+		
+		array = [ 0,1,2,3,2,2,4,5 ] ;
+		arrayKit.deleteValue( array , 7 ) ;
+		expect( array ).to.equal( [ 0,1,2,3,2,2,4,5 ] ) ;
+		arrayKit.deleteValue( array , 2 ) ;
+		expect( array ).to.equal( [ 0,1,3,4,5 ] ) ;
+		
+		array = [ 2,0,1,2,3,2,2,4,5,2 ] ;
+		arrayKit.deleteValue( array , 2 ) ;
+		expect( array ).to.equal( [ 0,1,3,4,5 ] ) ;
 	} ) ;
 } ) ;
 
@@ -105,11 +148,11 @@ describe( ".delete()" , function() {
 describe( ".range()" , function() {
 	
 	it( "should create an array from a range" , function() {
-		expect( arrayKit.range( 4 ) ).to.eql( [ 0,1,2,3 ] ) ;
-		expect( arrayKit.range( 1 , 4 ) ).to.eql( [ 1,2,3 ] ) ;
-		expect( arrayKit.range( 3 , 0 ) ).to.eql( [ 3,2,1 ] ) ;
-		expect( arrayKit.range( 1 , 10 , 2 ) ).to.eql( [ 1,3,5,7,9 ] ) ;
-		expect( arrayKit.range( 9 , 0 , -2 ) ).to.eql( [ 9,7,5,3,1 ] ) ;
+		expect( arrayKit.range( 4 ) ).to.equal( [ 0,1,2,3 ] ) ;
+		expect( arrayKit.range( 1 , 4 ) ).to.equal( [ 1,2,3 ] ) ;
+		expect( arrayKit.range( 3 , 0 ) ).to.equal( [ 3,2,1 ] ) ;
+		expect( arrayKit.range( 1 , 10 , 2 ) ).to.equal( [ 1,3,5,7,9 ] ) ;
+		expect( arrayKit.range( 9 , 0 , -2 ) ).to.equal( [ 9,7,5,3,1 ] ) ;
 	} ) ;
 } ) ;
 
