@@ -105,41 +105,67 @@ describe( ".delete()" , function() {
 describe( ".deleteValue()" , function() {
 	
 	it( "should delete values in-place" , function() {
-		var array ;
+		var array , count ;
 		
 		array = [ 0,1,2,3,4,5 ] ;
-		arrayKit.deleteValue( array , 7 ) ;
+		count = arrayKit.deleteValue( array , 7 ) ;
 		expect( array ).to.equal( [ 0,1,2,3,4,5 ] ) ;
-		arrayKit.deleteValue( array , 3 ) ;
+		expect( count ).to.be( 0 ) ;
+
+		count = arrayKit.deleteValue( array , 3 ) ;
 		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
-		arrayKit.deleteValue( array , false ) ;
+		expect( count ).to.be( 1 ) ;
+	
+		count = arrayKit.deleteValue( array , false ) ;
 		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
-		arrayKit.deleteValue( array , null ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , null ) ;
 		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
-		arrayKit.deleteValue( array , NaN ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , NaN ) ;
 		expect( array ).to.equal( [ 0,1,2,4,5 ] ) ;
-		arrayKit.deleteValue( array , 0 ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , 0 ) ;
 		expect( array ).to.equal( [ 1,2,4,5 ] ) ;
+		expect( count ).to.be( 1 ) ;
+	
 		
 		array = [ 0,1,NaN,2,3,4,5 ] ;
-		arrayKit.deleteValue( array , 7 ) ;
+		count = arrayKit.deleteValue( array , 7 ) ;
 		expect( array ).to.equal( [ 0,1,NaN,2,3,4,5 ] ) ;
-		arrayKit.deleteValue( array , 0 ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , 0 ) ;
 		expect( array ).to.equal( [ 1,NaN,2,3,4,5 ] ) ;
-		arrayKit.deleteValue( array , null ) ;
+		expect( count ).to.be( 1 ) ;
+	
+		count = arrayKit.deleteValue( array , null ) ;
 		expect( array ).to.equal( [ 1,NaN,2,3,4,5 ] ) ;
-		arrayKit.deleteValue( array , NaN ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , NaN ) ;
 		expect( array ).to.equal( [ 1,2,3,4,5 ] ) ;
+		expect( count ).to.be( 1 ) ;
+	
 		
 		array = [ 0,1,2,3,2,2,4,5 ] ;
-		arrayKit.deleteValue( array , 7 ) ;
+		count = arrayKit.deleteValue( array , 7 ) ;
 		expect( array ).to.equal( [ 0,1,2,3,2,2,4,5 ] ) ;
-		arrayKit.deleteValue( array , 2 ) ;
+		expect( count ).to.be( 0 ) ;
+	
+		count = arrayKit.deleteValue( array , 2 ) ;
 		expect( array ).to.equal( [ 0,1,3,4,5 ] ) ;
+		expect( count ).to.be( 3 ) ;
+	
 		
 		array = [ 2,0,1,2,3,2,2,4,5,2 ] ;
-		arrayKit.deleteValue( array , 2 ) ;
+		count = arrayKit.deleteValue( array , 2 ) ;
 		expect( array ).to.equal( [ 0,1,3,4,5 ] ) ;
+		expect( count ).to.be( 5 ) ;
+	
 	} ) ;
 } ) ;
 
