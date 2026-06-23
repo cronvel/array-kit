@@ -43,6 +43,16 @@ describe( ".inPlaceFilter()" , function() {
 		expect( array ).to.have.length( 3 ) ;
 	} ) ;
 
+	it( "should filter in place using indexes" , function() {
+		var array , result ;
+		
+		array = "abcdef".split( '' ) ;
+		result = arrayKit.inPlaceFilter( array , ( e , i ) => i % 2 ) ;
+		expect( result ).to.be( array ) ;
+		expect( array ).to.equal( [ 'b','d','f' ] ) ;
+		expect( array ).to.have.length( 3 ) ;
+	} ) ;
+
 	it( "forced key" , function() {
 		var array , result ;
 
