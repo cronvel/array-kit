@@ -242,6 +242,27 @@ describe( "Sum and mean" , function() {
 		expect( arrayKit.chunkedFloatSum( array , 10 ) ).to.be( expectedSum ) ;
 	} ) ;
 
+	it( "should compute the partial sum of an array" , function() {
+		let array , expectedSum ;
+
+		array = arrayKit.range.inclusive( 1 , 100 ) ;
+		expectedSum = gaussFormula( 10 , 90 , 81  ) ;
+
+		expect( arrayKit.sum( array , 9 , 90 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.floatSum( array , 9 , 90 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 10 , 9 , 90 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 9 , 9 , 90 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 11 , 9 , 90 ) ).to.be( expectedSum ) ;
+
+		array = arrayKit.range.inclusive( 0 , 100 , 0.1 ) ;
+		expectedSum = gaussFormula( 10 , 90 , 801  ) ;
+
+		expect( arrayKit.sum( array , 100 , 901 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.floatSum( array , 100 , 901 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 10 , 100 , 901 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 4 , 100 , 901 ) ).to.be( expectedSum ) ;
+	} ) ;
+
 	it( "should compute the sum avoiding floating point loss of precision when using .sum.floatSum()" , function() {
 		let array , expectedSum ;
 
@@ -277,6 +298,17 @@ describe( "Sum and mean" , function() {
 
 		expect( arrayKit.mean( array ) ).to.be( expectedMean ) ;
 		expect( arrayKit.floatMean( array ) ).to.be( expectedMean ) ;
+	} ) ;
+
+	it( "should compute the partial mean of an array" , function() {
+		let array , expectedSum , expectedMean ;
+
+		array = arrayKit.range.inclusive( 1 , 100 ) ;
+		expectedSum = gaussFormula( 10 , 90 , 81  ) ;
+		expectedMean = expectedSum / 81 ;
+
+		expect( arrayKit.mean( array , 9 , 90 ) ).to.be( expectedMean ) ;
+		expect( arrayKit.floatMean( array , 9 , 90 ) ).to.be( expectedMean ) ;
 	} ) ;
 } ) ;
 
