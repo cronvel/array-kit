@@ -31,6 +31,42 @@ const arrayKit = require( '..' ) ;
 
 
 
+describe( ".range()" , function() {
+	
+	it( "should create an array from a range" , function() {
+		expect( arrayKit.range( 4 ) ).to.equal( [ 0,1,2,3 ] ) ;
+		expect( arrayKit.range( 1 , 4 ) ).to.equal( [ 1,2,3 ] ) ;
+		expect( arrayKit.range( 3 , 0 ) ).to.equal( [ 3,2,1 ] ) ;
+		expect( arrayKit.range( 1 , 10 , 2 ) ).to.equal( [ 1,3,5,7,9 ] ) ;
+		expect( arrayKit.range( 1 , 11 , 2 ) ).to.equal( [ 1,3,5,7,9 ] ) ;
+		expect( arrayKit.range( 9 , 0 , -2 ) ).to.equal( [ 9,7,5,3,1 ] ) ;
+		expect( arrayKit.range( 9 , -1 , -2 ) ).to.equal( [ 9,7,5,3,1 ] ) ;
+	} ) ;
+
+	it( "should create an array from a range with inclusive end" , function() {
+		expect( arrayKit.range.inclusive( 1 , 4 ) ).to.equal( [ 1,2,3,4 ] ) ;
+		expect( arrayKit.range.inclusive( 3 , 0 ) ).to.equal( [ 3,2,1,0 ] ) ;
+		expect( arrayKit.range.inclusive( 1 , 10 , 2 ) ).to.equal( [ 1,3,5,7,9 ] ) ;
+		expect( arrayKit.range.inclusive( 1 , 11 , 2 ) ).to.equal( [ 1,3,5,7,9,11 ] ) ;
+		expect( arrayKit.range.inclusive( 9 , 0 , -2 ) ).to.equal( [ 9,7,5,3,1 ] ) ;
+		expect( arrayKit.range.inclusive( 9 , -1 , -2 ) ).to.equal( [ 9,7,5,3,1,-1 ] ) ;
+	} ) ;
+
+	it( "should create an array from a float range" , function() {
+		expect( arrayKit.range( 1.2 , 3.2 ) ).to.equal( [ 1.2 , 2.2 ] ) ;
+		expect( arrayKit.range( 1.2 , 3.3 ) ).to.equal( [ 1.2 , 2.2 , 3.2 ] ) ;
+
+		expect( arrayKit.range( 1.2 , 2 , 0.1 ) ).to.equal( [ 1.2 , 1.3 , 1.4 , 1.5 , 1.6 , 1.7 , 1.8 , 1.9 ] ) ;
+	} ) ;
+
+	it( "should create an array from a float range with inclusive end" , function() {
+		expect( arrayKit.range.inclusive( 1.2 , 3.3 ) ).to.equal( [ 1.2 , 2.2 , 3.2 ] ) ;
+		expect( arrayKit.range.inclusive( 1.2 , 2 , 0.1 ) ).to.equal( [ 1.2 , 1.3 , 1.4 , 1.5 , 1.6 , 1.7 , 1.8 , 1.9 , 2 ] ) ;
+	} ) ;
+} ) ;
+
+
+
 describe( ".inPlaceFilter()" , function() {
 	
 	it( "should filter in place" , function() {
@@ -181,14 +217,66 @@ describe( ".deleteValue()" , function() {
 
 
 
-describe( ".range()" , function() {
+describe( "Sum and mean" , function() {
 	
-	it( "should create an array from a range" , function() {
-		expect( arrayKit.range( 4 ) ).to.equal( [ 0,1,2,3 ] ) ;
-		expect( arrayKit.range( 1 , 4 ) ).to.equal( [ 1,2,3 ] ) ;
-		expect( arrayKit.range( 3 , 0 ) ).to.equal( [ 3,2,1 ] ) ;
-		expect( arrayKit.range( 1 , 10 , 2 ) ).to.equal( [ 1,3,5,7,9 ] ) ;
-		expect( arrayKit.range( 9 , 0 , -2 ) ).to.equal( [ 9,7,5,3,1 ] ) ;
+	const gaussFormula = ( firstTerm , lastTerm , numberOfTerms ) => ( firstTerm + lastTerm ) * numberOfTerms / 2 ;
+
+	it( "should compute the sum of an array" , function() {
+		let array , expectedSum ;
+
+		array = arrayKit.range.inclusive( 1 , 100 ) ;
+		expectedSum = gaussFormula( 1 , 100 , 100  ) ;
+
+		expect( arrayKit.sum( array ) ).to.be( expectedSum ) ;
+		expect( arrayKit.floatSum( array ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 10 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 9 ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 11 ) ).to.be( expectedSum ) ;
+
+		array = arrayKit.range.inclusive( 0 , 100 , 0.1 ) ;
+		expectedSum = gaussFormula( 0 , 100 , 1001  ) ;
+
+		expect( arrayKit.sum( array ) ).to.be( expectedSum ) ;
+		expect( arrayKit.floatSum( array ) ).to.be( expectedSum ) ;
+		expect( arrayKit.chunkedFloatSum( array , 10 ) ).to.be( expectedSum ) ;
+	} ) ;
+
+	it( "should compute the sum avoiding floating point loss of precision when using .sum.floatSum()" , function() {
+		let array , expectedSum ;
+
+		array = arrayKit.range.inclusive( 0 , 10 , 0.000001 ) ;
+		expectedSum = gaussFormula( 0 , 10 , 10_000_001  ) ;
+
+		// The basic sum does not avoid loss of precision when adding small values to bigger one
+		expect( arrayKit.sum( array ) ).not.to.be( expectedSum ) ;
+
+		// This one compensate small errors
+		expect( arrayKit.floatSum( array ) ).to.be( expectedSum ) ;
+	} ) ;
+
+	it( "should compute the sum avoiding floating point loss of precision when using .sum.chunkedFloatSum()" , function() {
+		let array , expectedSum ;
+
+		array = arrayKit.range.inclusive( 0 , 10 , 0.000001 ) ;
+		expectedSum = gaussFormula( 0 , 10 , 10_000_001  ) ;
+
+		// The basic sum does not avoid loss of precision when adding small values to bigger one
+		expect( arrayKit.sum( array ) ).not.to.be( expectedSum ) ;
+
+		// This one compensate small errors, it should be better than .sum.floatSum(), but it's hard to test it
+		expect( arrayKit.chunkedFloatSum( array , 10 ) ).to.be( expectedSum ) ;
+	} ) ;
+
+	it( "should compute the mean of an array" , function() {
+		let array , expectedSum , expectedMean ;
+
+		array = arrayKit.range.inclusive( 1 , 100 ) ;
+		expectedSum = gaussFormula( 1 , 100 , 100  ) ;
+		expectedMean = expectedSum / array.length ;
+
+		expect( arrayKit.mean( array ) ).to.be( expectedMean ) ;
+		expect( arrayKit.floatMean( array ) ).to.be( expectedMean ) ;
 	} ) ;
 } ) ;
 
