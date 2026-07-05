@@ -97,10 +97,10 @@ describe( "NDArray" , function() {
 			expect( ndarray.get( 0 , 0 ) ).to.be( 22 ) ;
 			expect( ndarray.getA( [ 0 , 0 ] ) ).to.be( 22 ) ;
 
-			expect( () => ndarray.get( -1 , 0 , 101 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.getA( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.get( 12 , 3 , 101 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.get( 1 , 5 , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( -1 , 0 , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.setA( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 12 , 3 , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 1 , 5 , 101 ) ).to.throw.a( RangeError ) ;
 
 			expect( () => ndarray.get( -1 , 0 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.getA( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
@@ -178,6 +178,32 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 58 ) ).to.equal( [ 2 , 2 , 2 ] ) ;
 		} ) ;
 
+		it( ".get() / .getA() / .set() / .setA() on ND-array with changed order" , function() {
+			let ndarray = new NDArray( arrayKit.range( 24 ) , [ 2 , 3 , 4 ] , { order: [ 2 , 0 , 1 ] } ) ;
+			expect( ndarray.get( 1 , 1 , 2 ) ).to.be( 14 ) ;
+			expect( ndarray.getA( [ 0 , 2 , 3 ] ) ).to.be( 19 ) ;
+
+			ndarray.set( 1 , 1 , 2 , 111 ) ;
+			expect( ndarray.get( 1 , 1 , 2 ) ).to.be( 111 ) ;
+			expect( ndarray.getA( [ 1 , 1 , 2 ] ) ).to.be( 111 ) ;
+
+			ndarray.set( 0 , 2 , 3 , 777 ) ;
+			expect( ndarray.get( 0 , 2 , 3 ) ).to.be( 777 ) ;
+			expect( ndarray.getA( [ 0 , 2 , 3 ] ) ).to.be( 777 ) ;
+
+			expect( () => ndarray.set( -1 , 0 , 1 , "value" ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.setA( [ 2 , -4 , 3 ] , "value" ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 1 , 2 , 12 , "value" ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 1 , 5 , 2 , "value" ) ).to.throw.a( RangeError ) ;
+
+			expect( () => ndarray.get( -1 , 0 , 1 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.getA( [ 2 , -4 , 3 ] ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( 1 , 2 , 12 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( 1 , 5 , 2 ) ).to.throw.a( RangeError ) ;
+
+			expect( ndarray.dataStore ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,111,15,16,17,18,777,20,21,22,23] ) ;
+		} ) ;
+
 		it( ".forEach() on ND-array with changed order" , function() {
 			let ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] , { reverse: true } ) ;
 			let callArgs = [] ;
@@ -247,6 +273,37 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 294 ) ).to.equal( [ -3 , 4 , 6 ] ) ;
 		} ) ;
 
+		it( ".get() / .getA() / .set() / .setA() on non-zero-based ND-array" , function() {
+			let ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -2 , 2 ] , [ -1 , 1 ] ] ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 13 ) ;
+			expect( ndarray.get( -2 , 0 ) ).to.be( 5 ) ;
+			expect( ndarray.getA( [ 2 , -1 ] ) ).to.be( 4 ) ;
+
+			ndarray.set( 1 , 1 , 42 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 42 ) ;
+			expect( ndarray.getA( [ 1 , 1 ] ) ).to.be( 42 ) ;
+
+			ndarray.setA( [ 2 , -1 ] , 72 ) ;
+			expect( ndarray.get( 2 , -1 ) ).to.be( 72 ) ;
+			expect( ndarray.getA( [ 2 , -1 ] ) ).to.be( 72 ) ;
+
+			ndarray.set( -2 , -1 , 22 ) ;
+			expect( ndarray.get( -2 , -1 ) ).to.be( 22 ) ;
+			expect( ndarray.getA( [ -2 , -1 ] ) ).to.be( 22 ) ;
+
+			expect( () => ndarray.set( -3 , 0 , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.setA( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 12 , 3 , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( 1 , 5 , 101 ) ).to.throw.a( RangeError ) ;
+
+			expect( () => ndarray.get( -3 , 0 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.getA( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( 12 , 3 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( 1 , 5 ) ).to.throw.a( RangeError ) ;
+
+			expect( ndarray.dataStore ).to.equal( [22,1,2,3,72,5,6,7,8,9,10,11,12,42,14] ) ;
+		} ) ;
+
 		it( ".forEach() on non-zero-based ND-array" , function() {
 			let ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -2 , 2 ] , [ -1 , 1 ] ] ) ;
 			let callArgs = [] ;
@@ -269,6 +326,26 @@ describe( "NDArray" , function() {
 				[ 13 , [ 1 , 1 ] , 13 ] ,
 				[ 14 , [ 2 , 1 ] , 14 ] ,
 			] ) ;
+		} ) ;
+	} ) ;
+
+	describe( ".map()" , function() {
+		it( "basic .map() should return a new NDArray with its own dataStore, mapping values with the callback" , function() {
+			let ndarray , mapped ;
+
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+
+			mapped = ndarray.map( value => 2 * value ) ;
+			expect( mapped.dataStore ).not.to.be( ndarray.dataStore ) ;
+			expect( mapped.dataStore ).to.equal( [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28] ) ;
+
+			mapped = ndarray.map( ( value , coords ) => coords[ 0 ] + coords[ 1 ] ) ;
+			expect( mapped.dataStore ).to.equal( [ 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ] ) ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { dataStoreStart: 3 } ) ;
+			mapped = ndarray.map( value => 2 * value ) ;
+			console.log( "mapped:" , mapped.dataStore.length , mapped ) ;
+			expect( mapped.dataStore ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
 		} ) ;
 	} ) ;
 } ) ;
