@@ -133,6 +133,105 @@ describe( "NDArray" , function() {
 				[ 14 , [ 2 , 4 ] , 14 ] ,
 			] ) ;
 		} ) ;
+
+		it( "basic .forEachInArea()" , function() {
+			let callArgs ;
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			// Iterate the whole array
+			callArgs = [] ;
+			ndarray.forEachInArea( [ [ 0 , 3 ] , [ 0 , 4 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 0 , [ 0 , 0 ] , 0 ] ,
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 3 , [ 3 , 0 ] , 3 ] ,
+				[ 4 , [ 0 , 1 ] , 4 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 7 , [ 3 , 1 ] , 7 ] ,
+				[ 8 , [ 0 , 2 ] , 8 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 11 , [ 3 , 2 ] , 11 ] ,
+				[ 12 , [ 0 , 3 ] , 12 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 15 , [ 3 , 3 ] , 15 ] ,
+				[ 16 , [ 0 , 4 ] , 16 ] ,
+				[ 17 , [ 1 , 4 ] , 17 ] ,
+				[ 18 , [ 2 , 4 ] , 18 ] ,
+				[ 19 , [ 3 , 4 ] , 19 ] ,
+			] ) ;
+
+
+			// Iterate partially on x
+			callArgs = [] ;
+			ndarray.forEachInArea( [ [ 1 , 2 ] , [ 0 , 4 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			//console.log( callArgs ) ; return ;
+			expect( callArgs ).to.equal( [
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 17 , [ 1 , 4 ] , 17 ] ,
+				[ 18 , [ 2 , 4 ] , 18 ] ,
+			] ) ;
+
+
+			// Iterate partially on y
+			callArgs = [] ;
+			ndarray.forEachInArea( [ [ 0 , 3 ] , [ 1 , 3 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 4 , [ 0 , 1 ] , 4 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 7 , [ 3 , 1 ] , 7 ] ,
+				[ 8 , [ 0 , 2 ] , 8 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 11 , [ 3 , 2 ] , 11 ] ,
+				[ 12 , [ 0 , 3 ] , 12 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 15 , [ 3 , 3 ] , 15 ] ,
+			] ) ;
+
+
+			// Iterate partially on x and y
+			callArgs = [] ;
+			ndarray.forEachInArea( [ [ 1 , 2 ] , [ 1 , 3 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+			] ) ;
+
+			// Iterate partially on x and y, using the .forEachInArea( mins , maxs , callback ) syntax
+			callArgs = [] ;
+			ndarray.forEachInArea( [ 1 , 1 ] , [ 2 , 3 ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+			] ) ;
+			
+			// Range errors
+			expect( () => ndarray.forEachInArea( [ 1 , 1 ] , [ 4 , 3 ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInArea( [ [ 1 , 3 ] , [ 3 , 5 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInArea( [ [ 1 , 3 ] , [ 3 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInArea( [ [ 1 , 0 ] , [ 1 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+		} ) ;
 	} ) ;
 
 	describe( "ND-arrays with changed order" , function() {
@@ -344,8 +443,48 @@ describe( "NDArray" , function() {
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { dataStoreStart: 3 } ) ;
 			mapped = ndarray.map( value => 2 * value ) ;
-			console.log( "mapped:" , mapped.dataStore.length , mapped ) ;
+			//console.log( "mapped:" , mapped.dataStore.length , mapped ) ;
 			expect( mapped.dataStore ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
+		} ) ;
+	} ) ;
+
+	describe( ".extractArea()" , function() {
+		it( "basic .extractArea()" , function() {
+			let ndarray , extracted ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			extracted = ndarray.extractArea( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
+			//console.log( "extracted:" , extracted.dataStore.length , extracted ) ;
+			expect( extracted.dimensions ).to.be( 2 ) ;
+			expect( extracted.size ).to.be( 6 ) ;
+			expect( extracted.sizes ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.mins ).to.equal( [ 1 , 1 ] ) ;
+			expect( extracted.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( extracted.strides ).to.equal( [ 1 , 2 ] ) ;
+			expect( extracted.dataStoreStart ).to.be( 0 ) ;
+			expect( extracted.dataStoreEnd ).to.be( 6 ) ;
+			expect( extracted.dataStore ).to.equal( [ 5, 6, 9, 10, 13, 14 ] ) ;
+		} ) ;
+	} ) ;
+
+	describe( ".mapArea()" , function() {
+		it( "basic .mapArea()" , function() {
+			let ndarray , extracted ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			extracted = ndarray.mapArea( [ [ 1 , 2 ] , [ 1 , 3 ] ] , value => 2 * value ) ;
+			//console.log( "extracted:" , extracted.dataStore.length , extracted ) ;
+			expect( extracted.dimensions ).to.be( 2 ) ;
+			expect( extracted.size ).to.be( 6 ) ;
+			expect( extracted.sizes ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.mins ).to.equal( [ 1 , 1 ] ) ;
+			expect( extracted.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( extracted.strides ).to.equal( [ 1 , 2 ] ) ;
+			expect( extracted.dataStoreStart ).to.be( 0 ) ;
+			expect( extracted.dataStoreEnd ).to.be( 6 ) ;
+			expect( extracted.dataStore ).to.equal( [ 10, 12, 18, 20, 26, 28 ] ) ;
 		} ) ;
 	} ) ;
 } ) ;
