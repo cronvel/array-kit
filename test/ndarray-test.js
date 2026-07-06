@@ -530,6 +530,14 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
+	describe( "Getting vectors" , function() {
+
+		it( ".fill()" , function() {
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [] ) ;
+		} ) ;
+	} ) ;
+
 	describe( "Misc" , function() {
 
 		it( ".fill()" , function() {
