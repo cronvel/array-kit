@@ -80,30 +80,30 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 38 ) ).to.equal( [ 2 , 2 , 2 ] ) ;
 		} ) ;
 
-		it( "basic .get() / .getA() / .set() / .setA()" , function() {
+		it( "basic .get() / .set()" , function() {
 			let ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
 			expect( ndarray.get( 1 , 3 ) ).to.be( 10 ) ;
-			expect( ndarray.getA( [ 1 , 3 ] ) ).to.be( 10 ) ;
+			expect( ndarray.get( [ 1 , 3 ] ) ).to.be( 10 ) ;
 
 			ndarray.set( 1 , 3 , 42 ) ;
 			expect( ndarray.get( 1 , 3 ) ).to.be( 42 ) ;
-			expect( ndarray.getA( [ 1 , 3 ] ) ).to.be( 42 ) ;
+			expect( ndarray.get( [ 1 , 3 ] ) ).to.be( 42 ) ;
 
-			ndarray.setA( [ 2 , 4 ] , 72 ) ;
+			ndarray.set( [ 2 , 4 ] , 72 ) ;
 			expect( ndarray.get( 2 , 4 ) ).to.be( 72 ) ;
-			expect( ndarray.getA( [ 2 , 4 ] ) ).to.be( 72 ) ;
+			expect( ndarray.get( [ 2 , 4 ] ) ).to.be( 72 ) ;
 
 			ndarray.set( 0 , 0 , 22 ) ;
 			expect( ndarray.get( 0 , 0 ) ).to.be( 22 ) ;
-			expect( ndarray.getA( [ 0 , 0 ] ) ).to.be( 22 ) ;
+			expect( ndarray.get( [ 0 , 0 ] ) ).to.be( 22 ) ;
 
 			expect( () => ndarray.set( -1 , 0 , 101 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.setA( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 12 , 3 , 101 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 1 , 5 , 101 ) ).to.throw.a( RangeError ) ;
 
 			expect( () => ndarray.get( -1 , 0 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.getA( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 12 , 3 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 ) ).to.throw.a( RangeError ) ;
 
@@ -277,26 +277,26 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 58 ) ).to.equal( [ 2 , 2 , 2 ] ) ;
 		} ) ;
 
-		it( ".get() / .getA() / .set() / .setA() on ND-array with changed order" , function() {
+		it( ".get() / .get() / .set() / .set() on ND-array with changed order" , function() {
 			let ndarray = new NDArray( arrayKit.range( 24 ) , [ 2 , 3 , 4 ] , { order: [ 2 , 0 , 1 ] } ) ;
 			expect( ndarray.get( 1 , 1 , 2 ) ).to.be( 14 ) ;
-			expect( ndarray.getA( [ 0 , 2 , 3 ] ) ).to.be( 19 ) ;
+			expect( ndarray.get( [ 0 , 2 , 3 ] ) ).to.be( 19 ) ;
 
 			ndarray.set( 1 , 1 , 2 , 111 ) ;
 			expect( ndarray.get( 1 , 1 , 2 ) ).to.be( 111 ) ;
-			expect( ndarray.getA( [ 1 , 1 , 2 ] ) ).to.be( 111 ) ;
+			expect( ndarray.get( [ 1 , 1 , 2 ] ) ).to.be( 111 ) ;
 
 			ndarray.set( 0 , 2 , 3 , 777 ) ;
 			expect( ndarray.get( 0 , 2 , 3 ) ).to.be( 777 ) ;
-			expect( ndarray.getA( [ 0 , 2 , 3 ] ) ).to.be( 777 ) ;
+			expect( ndarray.get( [ 0 , 2 , 3 ] ) ).to.be( 777 ) ;
 
 			expect( () => ndarray.set( -1 , 0 , 1 , "value" ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.setA( [ 2 , -4 , 3 ] , "value" ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( [ 2 , -4 , 3 ] , "value" ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 1 , 2 , 12 , "value" ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 1 , 5 , 2 , "value" ) ).to.throw.a( RangeError ) ;
 
 			expect( () => ndarray.get( -1 , 0 , 1 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.getA( [ 2 , -4 , 3 ] ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( [ 2 , -4 , 3 ] ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 2 , 12 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 , 2 ) ).to.throw.a( RangeError ) ;
 
@@ -372,31 +372,31 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 294 ) ).to.equal( [ -3 , 4 , 6 ] ) ;
 		} ) ;
 
-		it( ".get() / .getA() / .set() / .setA() on non-zero-based ND-array" , function() {
+		it( ".get() / .get() / .set() / .set() on non-zero-based ND-array" , function() {
 			let ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -2 , 2 ] , [ -1 , 1 ] ] ) ;
 			expect( ndarray.get( 1 , 1 ) ).to.be( 13 ) ;
 			expect( ndarray.get( -2 , 0 ) ).to.be( 5 ) ;
-			expect( ndarray.getA( [ 2 , -1 ] ) ).to.be( 4 ) ;
+			expect( ndarray.get( [ 2 , -1 ] ) ).to.be( 4 ) ;
 
 			ndarray.set( 1 , 1 , 42 ) ;
 			expect( ndarray.get( 1 , 1 ) ).to.be( 42 ) ;
-			expect( ndarray.getA( [ 1 , 1 ] ) ).to.be( 42 ) ;
+			expect( ndarray.get( [ 1 , 1 ] ) ).to.be( 42 ) ;
 
-			ndarray.setA( [ 2 , -1 ] , 72 ) ;
+			ndarray.set( [ 2 , -1 ] , 72 ) ;
 			expect( ndarray.get( 2 , -1 ) ).to.be( 72 ) ;
-			expect( ndarray.getA( [ 2 , -1 ] ) ).to.be( 72 ) ;
+			expect( ndarray.get( [ 2 , -1 ] ) ).to.be( 72 ) ;
 
 			ndarray.set( -2 , -1 , 22 ) ;
 			expect( ndarray.get( -2 , -1 ) ).to.be( 22 ) ;
-			expect( ndarray.getA( [ -2 , -1 ] ) ).to.be( 22 ) ;
+			expect( ndarray.get( [ -2 , -1 ] ) ).to.be( 22 ) ;
 
 			expect( () => ndarray.set( -3 , 0 , 101 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.setA( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.set( [ 2 , -4 ] , 101 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 12 , 3 , 101 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.set( 1 , 5 , 101 ) ).to.throw.a( RangeError ) ;
 
 			expect( () => ndarray.get( -3 , 0 ) ).to.throw.a( RangeError ) ;
-			expect( () => ndarray.getA( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.get( [ 2 , -4 ] ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 12 , 3 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 ) ).to.throw.a( RangeError ) ;
 
@@ -532,9 +532,38 @@ describe( "NDArray" , function() {
 
 	describe( "Getting vectors" , function() {
 
-		it( ".fill()" , function() {
+		it( ".getVector()" , function() {
+			let ndarray ;
+
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
-			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [3,4,5] ) ;
+			expect( ndarray.getVector( 2 , null ) ).to.equal( [2,5,8,11,14] ) ;
+
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -1 , 1 ] , [ -2 , 2 ] ] ) ;
+			expect( ndarray.getVector( null , 1 ) ).to.equal( [9,10,11] ) ;
+			expect( ndarray.getVector( [ 0 , null ] ) ).to.equal( [1,4,7,10,13] ) ;
+		} ) ;
+
+		it( ".forEachVectorInRegion()" , function() {
+			let callArgs ;
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			// Iterate partially on x
+			callArgs = [] ;
+			ndarray.forEachVectorInRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ [ 1, 5, 9, 13, 17 ], [ 1, 0 ], 1 ],
+				[ [ 2, 6, 10, 14, 18 ], [ 2, 0 ], 2 ]
+			] ) ;
+
+			// Iterate partially on y
+			callArgs = [] ;
+			ndarray.forEachVectorInRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ [ 4, 5, 6, 7 ], [ 0, 1 ], 4 ],
+				[ [ 8, 9, 10, 11 ], [ 0, 2 ], 8 ],
+				[ [ 12, 13, 14, 15 ], [ 0, 3 ], 12 ]
+			] ) ;
 		} ) ;
 	} ) ;
 
