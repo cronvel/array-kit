@@ -107,7 +107,7 @@ describe( "NDArray" , function() {
 			expect( () => ndarray.get( 12 , 3 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 ) ).to.throw.a( RangeError ) ;
 
-			expect( ndarray.dataStorage ).to.equal( [22,1,2,3,4,5,6,7,8,9,42,11,12,13,72] ) ;
+			expect( ndarray.storage ).to.equal( [22,1,2,3,4,5,6,7,8,9,42,11,12,13,72] ) ;
 		} ) ;
 
 		it( "basic .forEach()" , function() {
@@ -300,7 +300,7 @@ describe( "NDArray" , function() {
 			expect( () => ndarray.get( 1 , 2 , 12 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 , 2 ) ).to.throw.a( RangeError ) ;
 
-			expect( ndarray.dataStorage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,111,15,16,17,18,777,20,21,22,23] ) ;
+			expect( ndarray.storage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,111,15,16,17,18,777,20,21,22,23] ) ;
 		} ) ;
 
 		it( ".forEach() on ND-array with changed order" , function() {
@@ -400,7 +400,7 @@ describe( "NDArray" , function() {
 			expect( () => ndarray.get( 12 , 3 ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.get( 1 , 5 ) ).to.throw.a( RangeError ) ;
 
-			expect( ndarray.dataStorage ).to.equal( [22,1,2,3,72,5,6,7,8,9,10,11,12,42,14] ) ;
+			expect( ndarray.storage ).to.equal( [22,1,2,3,72,5,6,7,8,9,10,11,12,42,14] ) ;
 		} ) ;
 
 		it( ".forEach() on non-zero-based ND-array" , function() {
@@ -429,22 +429,22 @@ describe( "NDArray" , function() {
 	} ) ;
 
 	describe( ".map()" , function() {
-		it( "basic .map() should return a new NDArray with its own dataStorage, mapping values with the callback" , function() {
+		it( "basic .map() should return a new NDArray with its own storage, mapping values with the callback" , function() {
 			let ndarray , mapped ;
 
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
 
 			mapped = ndarray.map( value => 2 * value ) ;
-			expect( mapped.dataStorage ).not.to.be( ndarray.dataStorage ) ;
-			expect( mapped.dataStorage ).to.equal( [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28] ) ;
+			expect( mapped.storage ).not.to.be( ndarray.storage ) ;
+			expect( mapped.storage ).to.equal( [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28] ) ;
 
 			mapped = ndarray.map( ( value , coords ) => coords[ 0 ] + coords[ 1 ] ) ;
-			expect( mapped.dataStorage ).to.equal( [ 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ] ) ;
+			expect( mapped.storage ).to.equal( [ 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ] ) ;
 
-			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { dataStorageStart: 3 } ) ;
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { storageOffset: 3 } ) ;
 			mapped = ndarray.map( value => 2 * value ) ;
-			//console.log( "mapped:" , mapped.dataStorage.length , mapped ) ;
-			expect( mapped.dataStorage ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
+			//console.log( "mapped:" , mapped.storage.length , mapped ) ;
+			expect( mapped.storage ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
 		} ) ;
 	} ) ;
 
@@ -454,7 +454,7 @@ describe( "NDArray" , function() {
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			extracted = ndarray.extractRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
-			//console.log( "extracted:" , extracted.dataStorage.length , extracted ) ;
+			//console.log( "extracted:" , extracted.storage.length , extracted ) ;
 			expect( extracted.dimensions ).to.be( 2 ) ;
 			expect( extracted.size ).to.be( 6 ) ;
 			expect( extracted.sizes ).to.equal( [ 2 , 3 ] ) ;
@@ -462,9 +462,8 @@ describe( "NDArray" , function() {
 			expect( extracted.maxs ).to.equal( [ 2 , 3 ] ) ;
 			expect( extracted.order ).to.equal( [ 0 , 1 ] ) ;
 			expect( extracted.strides ).to.equal( [ 1 , 2 ] ) ;
-			expect( extracted.dataStorageStart ).to.be( 0 ) ;
-			expect( extracted.dataStorageEnd ).to.be( 6 ) ;
-			expect( extracted.dataStorage ).to.equal( [ 5, 6, 9, 10, 13, 14 ] ) ;
+			expect( extracted.storageOffset ).to.be( 0 ) ;
+			expect( extracted.storage ).to.equal( [ 5, 6, 9, 10, 13, 14 ] ) ;
 
 			expect( extracted.get( 1 , 1 ) ).to.be( 5 ) ;
 			expect( () => extracted.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
@@ -484,7 +483,7 @@ describe( "NDArray" , function() {
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			mapped = ndarray.mapRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] , value => 2 * value ) ;
-			//console.log( "mapped:" , mapped.dataStorage.length , mapped ) ;
+			//console.log( "mapped:" , mapped.storage.length , mapped ) ;
 			expect( mapped.dimensions ).to.be( 2 ) ;
 			expect( mapped.size ).to.be( 6 ) ;
 			expect( mapped.sizes ).to.equal( [ 2 , 3 ] ) ;
@@ -492,9 +491,8 @@ describe( "NDArray" , function() {
 			expect( mapped.maxs ).to.equal( [ 2 , 3 ] ) ;
 			expect( mapped.order ).to.equal( [ 0 , 1 ] ) ;
 			expect( mapped.strides ).to.equal( [ 1 , 2 ] ) ;
-			expect( mapped.dataStorageStart ).to.be( 0 ) ;
-			expect( mapped.dataStorageEnd ).to.be( 6 ) ;
-			expect( mapped.dataStorage ).to.equal( [ 10, 12, 18, 20, 26, 28 ] ) ;
+			expect( mapped.storageOffset ).to.be( 0 ) ;
+			expect( mapped.storage ).to.equal( [ 10, 12, 18, 20, 26, 28 ] ) ;
 
 			expect( mapped.get( 1 , 1 ) ).to.be( 10 ) ;
 			expect( () => mapped.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
@@ -513,14 +511,62 @@ describe( "NDArray" , function() {
 
 			ndarray.copy( dstNdarray , [ 1 , 2 ] ) ;
 			//console.log( "dst:" , dstNdarray ) ;
-			expect( dstNdarray.dataStorage ).to.equal( [
+			expect( dstNdarray.storage ).to.equal( [
 				null, null, null, null,
 				null, null, null, null,
 				null, 0,    1,    2,
 				null, 4,    5,    6,
 				null, 8,    9,    10
 			] ) ;
+
+			dstNdarray.fill( null ) ;
+			expect( dstNdarray.storage ).to.equal( [
+				null, null, null, null,
+				null, null, null, null,
+				null, null, null, null,
+				null, null, null, null,
+				null, null, null, null
+			] ) ;
 		} ) ;
+	} ) ;
+
+	describe( "Misc" , function() {
+
+		it( ".fill()" , function() {
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.storage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14] ) ;
+			ndarray.fill( null ) ;
+			expect( ndarray.storage ).to.equal( [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null] ) ;
+			ndarray.fill( 0 ) ;
+			expect( ndarray.storage ).to.equal( [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] ) ;
+			ndarray.fill( 18 ) ;
+			expect( ndarray.storage ).to.equal( [18,18,18,18,18,18,18,18,18,18,18,18,18,18,18] ) ;
+			ndarray.fill( "bob" ) ;
+			expect( ndarray.storage ).to.equal( ["bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob"] ) ;
+		} ) ;
+
+		it( ".fillRegion()" , function() {
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    1,    2,
+				3,    4,    5,
+				6,    7,    8,
+				9,    10,   11,
+				12,   13,   14
+			] ) ;
+			ndarray.fillRegion( [ [1,2],[1,3] ] , null ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    1,    2,
+				3,    null, null,
+				6,    null, null,
+				9,    null, null,
+				12,   13,   14
+			] ) ;
+		} ) ;
+	} ) ;
+	
+	describe( "Missing tests" , function() {
+		it( ".rebase()" ) ;
 	} ) ;
 } ) ;
 
