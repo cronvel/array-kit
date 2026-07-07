@@ -532,12 +532,23 @@ describe( "NDArray" , function() {
 
 	describe( "Getting vectors" , function() {
 
-		it( ".getVector()" , function() {
+		it( ".getVector() / .setVector()" , function() {
 			let ndarray ;
 
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
 			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [3,4,5] ) ;
 			expect( ndarray.getVector( 2 , null ) ).to.equal( [2,5,8,11,14] ) ;
+			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
+			ndarray.setVector( 2 , null , [201,202,203,204,205] ) ;
+			expect( ndarray.getVector( 2 , null ) ).to.equal( [201,202,203,204,205] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,   1,   201,
+				101, 102, 202,
+				6,   7,   203,
+				9,   10,  204,
+				12,  13,  205
+			] ) ;
 
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -1 , 1 ] , [ -2 , 2 ] ] ) ;
 			expect( ndarray.getVector( null , 1 ) ).to.equal( [9,10,11] ) ;
