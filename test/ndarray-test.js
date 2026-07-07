@@ -506,29 +506,48 @@ describe( "NDArray" , function() {
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			mapped = ndarray.mapVectorRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => {
-				console.log( "Received:" , { vector , coords , index } ) ;
 				for ( let d = 0 ; d < vector.length ; d ++ ) {
 					vector[ d ] += 100 * ( d + 1 ) ;
 				}
 				return vector ;
 			} ) ;
-			console.log( "mapped:" , mapped.storage.length , mapped ) ;
-			return ;
 			expect( mapped.dimensions ).to.be( 2 ) ;
-			expect( mapped.size ).to.be( 6 ) ;
-			expect( mapped.sizes ).to.equal( [ 2 , 3 ] ) ;
-			expect( mapped.mins ).to.equal( [ 1 , 1 ] ) ;
-			expect( mapped.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( mapped.size ).to.be( 10 ) ;
+			expect( mapped.sizes ).to.equal( [ 2 , 5 ] ) ;
+			expect( mapped.mins ).to.equal( [ 1 , 0 ] ) ;
+			expect( mapped.maxs ).to.equal( [ 2 , 4 ] ) ;
 			expect( mapped.order ).to.equal( [ 0 , 1 ] ) ;
 			expect( mapped.strides ).to.equal( [ 1 , 2 ] ) ;
 			expect( mapped.storageOffset ).to.be( 0 ) ;
-			expect( mapped.storage ).to.equal( [ 10, 12, 18, 20, 26, 28 ] ) ;
+			expect( mapped.storage ).to.equal( [
+				101, 102,
+				205, 206,
+				309, 310,
+				413, 414,
+				517, 518
+			] ) ;
+			expect( mapped.get( 1 , 1 ) ).to.be( 205 ) ;
 
-			expect( mapped.get( 1 , 1 ) ).to.be( 10 ) ;
-			expect( () => mapped.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
-			expect( () => mapped.get( 1 , 0 ) ).to.throw.a( RangeError ) ;
-			expect( () => mapped.get( 3 , 1 ) ).to.throw.a( RangeError ) ;
-			expect( () => mapped.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
+			mapped = ndarray.mapVectorRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => {
+				for ( let d = 0 ; d < vector.length ; d ++ ) {
+					vector[ d ] += 100 * ( d + 1 ) ;
+				}
+				return vector ;
+			} ) ;
+			expect( mapped.dimensions ).to.be( 2 ) ;
+			expect( mapped.size ).to.be( 12 ) ;
+			expect( mapped.sizes ).to.equal( [ 4 , 3 ] ) ;
+			expect( mapped.mins ).to.equal( [ 0 , 1 ] ) ;
+			expect( mapped.maxs ).to.equal( [ 3 , 3 ] ) ;
+			expect( mapped.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( mapped.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( mapped.storageOffset ).to.be( 0 ) ;
+			expect( mapped.storage ).to.equal( [
+			    104, 205, 306, 407,
+			    108, 209, 310, 411,
+			    112, 213, 314, 415
+			] ) ;
+			expect( mapped.get( 1 , 1 ) ).to.be( 205 ) ;
 		} ) ;
 	} ) ;
 
