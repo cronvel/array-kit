@@ -500,16 +500,46 @@ describe( "NDArray" , function() {
 			expect( () => mapped.get( 3 , 1 ) ).to.throw.a( RangeError ) ;
 			expect( () => mapped.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
 		} ) ;
+
+		it( "basic .mapVectorRegion()" , function() {
+			let ndarray , mapped ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			mapped = ndarray.mapVectorRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => {
+				console.log( "Received:" , { vector , coords , index } ) ;
+				for ( let d = 0 ; d < vector.length ; d ++ ) {
+					vector[ d ] += 100 * ( d + 1 ) ;
+				}
+				return vector ;
+			} ) ;
+			console.log( "mapped:" , mapped.storage.length , mapped ) ;
+			return ;
+			expect( mapped.dimensions ).to.be( 2 ) ;
+			expect( mapped.size ).to.be( 6 ) ;
+			expect( mapped.sizes ).to.equal( [ 2 , 3 ] ) ;
+			expect( mapped.mins ).to.equal( [ 1 , 1 ] ) ;
+			expect( mapped.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( mapped.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( mapped.strides ).to.equal( [ 1 , 2 ] ) ;
+			expect( mapped.storageOffset ).to.be( 0 ) ;
+			expect( mapped.storage ).to.equal( [ 10, 12, 18, 20, 26, 28 ] ) ;
+
+			expect( mapped.get( 1 , 1 ) ).to.be( 10 ) ;
+			expect( () => mapped.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
+			expect( () => mapped.get( 1 , 0 ) ).to.throw.a( RangeError ) ;
+			expect( () => mapped.get( 3 , 1 ) ).to.throw.a( RangeError ) ;
+			expect( () => mapped.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
+		} ) ;
 	} ) ;
 
-	describe( ".copy()" , function() {
-		it( "basic .copy()" , function() {
+	describe( ".copyTo()" , function() {
+		it( "basic .copyTo()" , function() {
 			let ndarray , dstNdarray , mapped ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			dstNdarray = new NDArray( new Array( 20 ).fill( null ) , [ 4 , 5 ] ) ;
 
-			ndarray.copy( dstNdarray , [ 1 , 2 ] ) ;
+			ndarray.copyTo( dstNdarray , [ 1 , 2 ] ) ;
 			//console.log( "dst:" , dstNdarray ) ;
 			expect( dstNdarray.storage ).to.equal( [
 				null, null, null, null,
@@ -553,6 +583,17 @@ describe( "NDArray" , function() {
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -1 , 1 ] , [ -2 , 2 ] ] ) ;
 			expect( ndarray.getVector( null , 1 ) ).to.equal( [9,10,11] ) ;
 			expect( ndarray.getVector( [ 0 , null ] ) ).to.equal( [1,4,7,10,13] ) ;
+			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
+			ndarray.setVector( 0 , null , [201,202,203,204,205] ) ;
+			expect( ndarray.getVector( 0 , null ) ).to.equal( [201,202,203,204,205] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,   201, 2,
+				3,   202, 5,
+				6,   203, 8,
+				101, 204, 103,
+				12,  205, 14
+			] ) ;
 		} ) ;
 
 		it( ".forEachVectorInRegion()" , function() {
