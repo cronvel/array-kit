@@ -567,14 +567,24 @@ describe( "NDArray" , function() {
 				null, 4,    5,    6,
 				null, 8,    9,    10
 			] ) ;
+		} ) ;
+	} ) ;
 
-			dstNdarray.fill( null ) ;
+	describe( ".combineInto()" , function() {
+		it( "basic .combineInto()" , function() {
+			let ndarray , dstNdarray , mapped ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			dstNdarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			ndarray.combineInto( dstNdarray , [ 1 , 2 ] , ( src , dst ) => src.value * dst.value ) ;
+			//console.log( "dst:" , dstNdarray ) ;
 			expect( dstNdarray.storage ).to.equal( [
-				null, null, null, null,
-				null, null, null, null,
-				null, null, null, null,
-				null, null, null, null,
-				null, null, null, null
+				0,    1,    2,    3,
+				4,    5,    6,    7,
+				8,    0,    10,   22,
+				12,   52,   70,   90,
+				16,   136,  162,  190
 			] ) ;
 		} ) ;
 	} ) ;
