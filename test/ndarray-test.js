@@ -277,7 +277,7 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 58 ) ).to.equal( [ 2 , 2 , 2 ] ) ;
 		} ) ;
 
-		it( ".get() / .get() / .set() / .set() on ND-array with changed order" , function() {
+		it( ".get() / .set() on ND-array with changed order" , function() {
 			let ndarray = new NDArray( arrayKit.range( 24 ) , [ 2 , 3 , 4 ] , { order: [ 2 , 0 , 1 ] } ) ;
 			expect( ndarray.get( 1 , 1 , 2 ) ).to.be( 14 ) ;
 			expect( ndarray.get( [ 0 , 2 , 3 ] ) ).to.be( 19 ) ;
@@ -372,7 +372,7 @@ describe( "NDArray" , function() {
 			expect( ndarray.getCoords( 294 ) ).to.equal( [ -3 , 4 , 6 ] ) ;
 		} ) ;
 
-		it( ".get() / .get() / .set() / .set() on non-zero-based ND-array" , function() {
+		it( ".get() / .set() on non-zero-based ND-array" , function() {
 			let ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -2 , 2 ] , [ -1 , 1 ] ] ) ;
 			expect( ndarray.get( 1 , 1 ) ).to.be( 13 ) ;
 			expect( ndarray.get( -2 , 0 ) ).to.be( 5 ) ;
@@ -585,6 +585,57 @@ describe( "NDArray" , function() {
 				8,    0,    10,   22,
 				12,   52,   70,   90,
 				16,   136,  162,  190
+			] ) ;
+		} ) ;
+	} ) ;
+
+	describe( ".combineVectorInto()" , function() {
+		it( "basic .combineVectorInto()" , function() {
+			let ndarray , dstNdarray , mapped ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			dstNdarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			ndarray.combineVectorInto( dstNdarray , [ 2 , null ] , [ [ 1 , 2 ] , null ] , ( src , dst ) => {
+				//console.log( "callback:" , { src , dst } ) ;
+				expect( src.value ).to.be.an( Array ) ;
+				expect( src.value ).to.have.length( 5 ) ;
+				
+				output = new Array( 5 ) ;
+				for ( let d = 0 ; d < src.value.length ; d ++ ) {
+					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
+				}
+				return output ;
+			} ) ;
+			//console.log( "dst:" , dstNdarray ) ;
+			expect( dstNdarray.storage ).to.equal( [
+				0,    1,    2,    6,
+				4,    5,    1030, 1042,
+				8,    9,    2090, 2110,
+				12,   13,   3182, 3210,
+				16,   17,   4306, 4342
+			] ) ;
+
+
+			dstNdarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineVectorInto( dstNdarray , [ null , 3 ] , [ null , [ 1 , 3 ] ] , ( src , dst ) => {
+				//console.log( "callback:" , { src , dst } ) ;
+				expect( src.value ).to.be.an( Array ) ;
+				expect( src.value ).to.have.length( 4 ) ;
+				
+				output = new Array( 5 ) ;
+				for ( let d = 0 ; d < src.value.length ; d ++ ) {
+					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
+				}
+				return output ;
+			} ) ;
+			//console.log( "dst:" , dstNdarray ) ;
+			expect( dstNdarray.storage ).to.equal( [
+				0,    1,    2,    3,
+				4,    5,    6,    7,
+				8,    9,    10,   11,
+				48,   1065, 2084, 3105,
+				128,  1153, 2180, 3209
 			] ) ;
 		} ) ;
 	} ) ;
