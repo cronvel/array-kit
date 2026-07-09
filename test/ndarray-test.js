@@ -477,12 +477,12 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
-	describe( ".mapRegion()" , function() {
-		it( "basic .mapRegion()" , function() {
+	describe( ".mapInRegion()" , function() {
+		it( "basic .mapInRegion()" , function() {
 			let ndarray , mapped ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
-			mapped = ndarray.mapRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] , value => 2 * value ) ;
+			mapped = ndarray.mapInRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] , value => 2 * value ) ;
 			//console.log( "mapped:" , mapped.storage.length , mapped ) ;
 			expect( mapped.dimensions ).to.be( 2 ) ;
 			expect( mapped.size ).to.be( 6 ) ;
@@ -501,11 +501,11 @@ describe( "NDArray" , function() {
 			expect( () => mapped.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
 		} ) ;
 
-		it( "basic .mapVectorRegion()" , function() {
+		it( "basic .mapVectorInRegion()" , function() {
 			let ndarray , mapped ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
-			mapped = ndarray.mapVectorRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => {
+			mapped = ndarray.mapVectorInRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => {
 				for ( let d = 0 ; d < vector.length ; d ++ ) {
 					vector[ d ] += 100 * ( d + 1 ) ;
 				}
@@ -528,7 +528,7 @@ describe( "NDArray" , function() {
 			] ) ;
 			expect( mapped.get( 1 , 1 ) ).to.be( 205 ) ;
 
-			mapped = ndarray.mapVectorRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => {
+			mapped = ndarray.mapVectorInRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => {
 				for ( let d = 0 ; d < vector.length ; d ++ ) {
 					vector[ d ] += 100 * ( d + 1 ) ;
 				}
@@ -714,7 +714,7 @@ describe( "NDArray" , function() {
 			expect( ndarray.storage ).to.equal( ["bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob"] ) ;
 		} ) ;
 
-		it( ".fillRegion()" , function() {
+		it( ".fillInRegion()" , function() {
 			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
 			expect( ndarray.storage ).to.equal( [
 				0,    1,    2,
@@ -723,7 +723,7 @@ describe( "NDArray" , function() {
 				9,    10,   11,
 				12,   13,   14
 			] ) ;
-			ndarray.fillRegion( [ [1,2],[1,3] ] , null ) ;
+			ndarray.fillInRegion( [ [1,2],[1,3] ] , null ) ;
 			expect( ndarray.storage ).to.equal( [
 				0,    1,    2,
 				3,    null, null,
