@@ -24,6 +24,8 @@
 	SOFTWARE.
 */
 
+"use strict" ;
+
 /* global describe, it, before, after */
 
 
@@ -32,7 +34,45 @@ const NDArray = arrayKit.NDArray ;
 
 
 
-describe( "NDArray" , function() {
+// Utilities
+
+const util = require( 'util' ) ;
+
+function logDataStorage( data , perLine = 8 ) {
+	const items = [] ;
+	let padding = 4 ;
+
+	for ( let i = 0 ; i < data.length ; i ++ ) {
+		const item = util.inspect( data[ i ] ) + ', ' ;
+		if ( item.length > padding ) { padding = item.length ; }
+		items[ i ] = item ;
+	}
+
+	if ( padding % 2 ) { padding ++ ; }	// Ensure even padding
+
+	let str = '' ;
+
+	for ( let i = 0 ; i < data.length ; i += perLine ) {
+		let line = '\t' ;
+		for ( let j = i , jMax = Math.min( i + perLine , data.length ) ; j < jMax ; j ++ ) {
+			let item = items[ j ] ;
+			if ( item.length < padding ) { item += ' '.repeat( padding - item.length ) ; }
+			line += item ;
+		}
+		line = line.trimEnd() ;
+		line += '\n' ;
+		str += line ;
+	}
+
+	str = str.slice( 0 , -2 ) ;
+	str = '[\n' + str + '\n]' ;
+
+	console.log( str ) ;
+}
+
+
+
+describe( "ND-Arrays" , function() {
 	
 	describe( "Basics" , function() {
 
@@ -428,7 +468,178 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
-	describe( ".map()" , function() {
+	describe( "Getting vectors" , function() {
+
+		it( ".getVector() / .setVector()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [3,4,5] ) ;
+			expect( ndarray.getVector( 2 , null ) ).to.equal( [2,5,8,11,14] ) ;
+			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
+			ndarray.setVector( 2 , null , [201,202,203,204,205] ) ;
+			expect( ndarray.getVector( 2 , null ) ).to.equal( [201,202,203,204,205] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,   1,   201,
+				101, 102, 202,
+				6,   7,   203,
+				9,   10,  204,
+				12,  13,  205
+			] ) ;
+
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -1 , 1 ] , [ -2 , 2 ] ] ) ;
+			expect( ndarray.getVector( null , 1 ) ).to.equal( [9,10,11] ) ;
+			expect( ndarray.getVector( [ 0 , null ] ) ).to.equal( [1,4,7,10,13] ) ;
+			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
+			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
+			ndarray.setVector( 0 , null , [201,202,203,204,205] ) ;
+			expect( ndarray.getVector( 0 , null ) ).to.equal( [201,202,203,204,205] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,   201, 2,
+				3,   202, 5,
+				6,   203, 8,
+				101, 204, 103,
+				12,  205, 14
+			] ) ;
+		} ) ;
+
+		it( ".forEachVectorInRegion()" , function() {
+			let callArgs ;
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			// Iterate partially on x
+			callArgs = [] ;
+			ndarray.forEachVectorInRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ [ 1, 5, 9, 13, 17 ], [ 1, 0 ], 1 ],
+				[ [ 2, 6, 10, 14, 18 ], [ 2, 0 ], 2 ]
+			] ) ;
+
+			// Iterate partially on y
+			callArgs = [] ;
+			ndarray.forEachVectorInRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ [ 4, 5, 6, 7 ], [ 0, 1 ], 4 ],
+				[ [ 8, 9, 10, 11 ], [ 0, 2 ], 8 ],
+				[ [ 12, 13, 14, 15 ], [ 0, 3 ], 12 ]
+			] ) ;
+		} ) ;
+	} ) ;
+
+	describe( "Filling a ND-Array: .fill() / .fillInRegion() / .fillVectorInRegion()" , function() {
+
+		it( ".fill()" , function() {
+			let ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.storage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14] ) ;
+			ndarray.fill( null ) ;
+			expect( ndarray.storage ).to.equal( [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null] ) ;
+			ndarray.fill( 0 ) ;
+			expect( ndarray.storage ).to.equal( [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] ) ;
+			ndarray.fill( 18 ) ;
+			expect( ndarray.storage ).to.equal( [18,18,18,18,18,18,18,18,18,18,18,18,18,18,18] ) ;
+			ndarray.fill( "bob" ) ;
+			expect( ndarray.storage ).to.equal( ["bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob"] ) ;
+		} ) ;
+
+		it( ".fillInRegion()" , function() {
+			let ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    1,    2,
+				3,    4,    5,
+				6,    7,    8,
+				9,    10,   11,
+				12,   13,   14
+			] ) ;
+			ndarray.fillInRegion( [ [1,2],[1,3] ] , null ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    1,    2,
+				3,    null, null,
+				6,    null, null,
+				9,    null, null,
+				12,   13,   14
+			] ) ;
+		} ) ;
+
+		it( ".fillVectorInRegion()" , function() {
+			// Create a sort of RGBA pixel-buffer
+			let ndarray = new NDArray( new Uint8Array( 6 * 5 * 4 ) , [ 6 , 5 , 4 ] , { order: [ 2 , 0 , 1 ] } ) ;
+			ndarray.fillVectorInRegion( [ [2,5] , [1,3] , null ] , [200,160,120,255] ) ;
+			//logDataStorage( ndarray.storage , 24 ) ;
+			expect( [ ... ndarray.storage ] ).to.equal( [
+				0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+				0,    0,    0,    0,    0,    0,    0,    0,    200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,
+				0,    0,    0,    0,    0,    0,    0,    0,    200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,
+				0,    0,    0,    0,    0,    0,    0,    0,    200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,  200,  160,  120,  255,
+				0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0
+			] ) ;
+		} ) ;
+	} ) ;
+	
+	describe( "Updating a ND-Array: .update() / .updateInRegion() / .updateVectorInRegion()" , function() {
+
+		it( ".update()" , function() {
+			let ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+			expect( ndarray.storage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14] ) ;
+			ndarray.update( value => value * 2 ) ;
+			expect( ndarray.storage ).to.equal( [0,2,4,6,8,10,12,14,16,18,20,22,24,26,28] ) ;
+
+			ndarray.update( ( value , coords ) => coords[ 0 ] + coords[ 1 ] ) ;
+			expect( ndarray.storage ).to.equal( [ 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ] ) ;
+		} ) ;
+
+		it( ".updateInRegion()" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.updateInRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] , value => 2 * value ) ;
+			logDataStorage( ndarray.storage , 4 ) ; return ;
+			expect( ndarray.storage ).to.equal( [
+				0,  1,  2,  3,
+				4,  10, 12, 7,
+				8,  18, 20, 11,
+				12, 26, 28, 15,
+				16, 17, 18, 19
+			] ) ;
+		} ) ;
+
+		it( ".updateVectorInRegion()" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.updateVectorInRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => {
+				//console.log( "Received:" , { vector , coords , index } ) ;
+				for ( let d = 0 ; d < vector.length ; d ++ ) {
+					vector[ d ] += 100 * ( d + 1 ) ;
+				}
+				return vector ;
+			} ) ;
+			//logDataStorage( ndarray.storage , 4 ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    101,  102,  3,
+				4,    205,  206,  7,
+				8,    309,  310,  11,
+				12,   413,  414,  15,
+				16,   517,  518,  19
+			] ) ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.updateVectorInRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => {
+				//console.log( "Received:" , { vector , coords , index } ) ;
+				for ( let d = 0 ; d < vector.length ; d ++ ) {
+					vector[ d ] += 100 * ( d + 1 ) ;
+				}
+				return vector ;
+			} ) ;
+			//logDataStorage( ndarray.storage , 4 ) ;
+			expect( ndarray.storage ).to.equal( [
+				0,    1,    2,    3,
+				104,  205,  306,  407,
+				108,  209,  310,  411,
+				112,  213,  314,  415,
+				16,   17,   18,   19
+			] ) ;
+		} ) ;
+	} ) ;
+	
+	describe( "Mapping a ND-array: .map() / .mapInRegion() / .mapVectorInRegion()" , function() {
+
 		it( "basic .map() should return a new NDArray with its own storage, mapping values with the callback" , function() {
 			let ndarray , mapped ;
 
@@ -446,38 +657,7 @@ describe( "NDArray" , function() {
 			//console.log( "mapped:" , mapped.storage.length , mapped ) ;
 			expect( mapped.storage ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
 		} ) ;
-	} ) ;
 
-	describe( ".extractRegion()" , function() {
-		it( "basic .extractRegion()" , function() {
-			let ndarray , extracted ;
-
-			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
-			extracted = ndarray.extractRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
-			//console.log( "extracted:" , extracted.storage.length , extracted ) ;
-			expect( extracted.dimensions ).to.be( 2 ) ;
-			expect( extracted.size ).to.be( 6 ) ;
-			expect( extracted.sizes ).to.equal( [ 2 , 3 ] ) ;
-			expect( extracted.mins ).to.equal( [ 1 , 1 ] ) ;
-			expect( extracted.maxs ).to.equal( [ 2 , 3 ] ) ;
-			expect( extracted.order ).to.equal( [ 0 , 1 ] ) ;
-			expect( extracted.strides ).to.equal( [ 1 , 2 ] ) ;
-			expect( extracted.storageOffset ).to.be( 0 ) ;
-			expect( extracted.storage ).to.equal( [ 5, 6, 9, 10, 13, 14 ] ) ;
-
-			expect( extracted.get( 1 , 1 ) ).to.be( 5 ) ;
-			expect( () => extracted.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
-			expect( () => extracted.get( 1 , 0 ) ).to.throw.a( RangeError ) ;
-			expect( () => extracted.get( 3 , 1 ) ).to.throw.a( RangeError ) ;
-			expect( () => extracted.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
-
-			extracted.rebase() ;
-			expect( extracted.get( 0 , 0 ) ).to.be( 5 ) ;
-			expect( extracted.get( 1 , 1 ) ).to.be( 10 ) ;
-		} ) ;
-	} ) ;
-
-	describe( ".mapInRegion()" , function() {
 		it( "basic .mapInRegion()" , function() {
 			let ndarray , mapped ;
 
@@ -551,7 +731,37 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
-	describe( ".copyTo()" , function() {
+	describe( "Extracting a region: .extractRegion()" , function() {
+
+		it( "basic .extractRegion()" , function() {
+			let ndarray , extracted ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			extracted = ndarray.extractRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
+			//console.log( "extracted:" , extracted.storage.length , extracted ) ;
+			expect( extracted.dimensions ).to.be( 2 ) ;
+			expect( extracted.size ).to.be( 6 ) ;
+			expect( extracted.sizes ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.mins ).to.equal( [ 1 , 1 ] ) ;
+			expect( extracted.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( extracted.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( extracted.strides ).to.equal( [ 1 , 2 ] ) ;
+			expect( extracted.storageOffset ).to.be( 0 ) ;
+			expect( extracted.storage ).to.equal( [ 5, 6, 9, 10, 13, 14 ] ) ;
+
+			expect( extracted.get( 1 , 1 ) ).to.be( 5 ) ;
+			expect( () => extracted.get( 0 , 1 ) ).to.throw.a( RangeError ) ;
+			expect( () => extracted.get( 1 , 0 ) ).to.throw.a( RangeError ) ;
+			expect( () => extracted.get( 3 , 1 ) ).to.throw.a( RangeError ) ;
+			expect( () => extracted.get( 1 , 4 ) ).to.throw.a( RangeError ) ;
+
+			extracted.rebase() ;
+			expect( extracted.get( 0 , 0 ) ).to.be( 5 ) ;
+			expect( extracted.get( 1 , 1 ) ).to.be( 10 ) ;
+		} ) ;
+	} ) ;
+
+	describe( "Copying a ND-Array into another one: .copyTo()" , function() {
 		it( "basic .copyTo()" , function() {
 			let ndarray , dstNdarray , mapped ;
 
@@ -570,7 +780,7 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
-	describe( ".combineInto()" , function() {
+	describe( "Combining a ND-Array into another one: .combineInto() / .combineVectorInto" , function() {
 		it( "basic .combineInto()" , function() {
 			let ndarray , dstNdarray , mapped ;
 
@@ -587,9 +797,7 @@ describe( "NDArray" , function() {
 				16,   136,  162,  190
 			] ) ;
 		} ) ;
-	} ) ;
 
-	describe( ".combineVectorInto()" , function() {
 		it( "basic .combineVectorInto()" , function() {
 			let ndarray , dstNdarray , mapped ;
 
@@ -601,7 +809,7 @@ describe( "NDArray" , function() {
 				expect( src.value ).to.be.an( Array ) ;
 				expect( src.value ).to.have.length( 5 ) ;
 				
-				output = new Array( 5 ) ;
+				let output = new Array( 5 ) ;
 				for ( let d = 0 ; d < src.value.length ; d ++ ) {
 					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
 				}
@@ -623,7 +831,7 @@ describe( "NDArray" , function() {
 				expect( src.value ).to.be.an( Array ) ;
 				expect( src.value ).to.have.length( 4 ) ;
 				
-				output = new Array( 5 ) ;
+				let output = new Array( 5 ) ;
 				for ( let d = 0 ; d < src.value.length ; d ++ ) {
 					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
 				}
@@ -640,102 +848,9 @@ describe( "NDArray" , function() {
 		} ) ;
 	} ) ;
 
-	describe( "Getting vectors" , function() {
-
-		it( ".getVector() / .setVector()" , function() {
-			let ndarray ;
-
-			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
-			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [3,4,5] ) ;
-			expect( ndarray.getVector( 2 , null ) ).to.equal( [2,5,8,11,14] ) ;
-			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
-			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
-			ndarray.setVector( 2 , null , [201,202,203,204,205] ) ;
-			expect( ndarray.getVector( 2 , null ) ).to.equal( [201,202,203,204,205] ) ;
-			expect( ndarray.storage ).to.equal( [
-				0,   1,   201,
-				101, 102, 202,
-				6,   7,   203,
-				9,   10,  204,
-				12,  13,  205
-			] ) ;
-
-			ndarray = new NDArray( arrayKit.range( 15 ) , [ [ -1 , 1 ] , [ -2 , 2 ] ] ) ;
-			expect( ndarray.getVector( null , 1 ) ).to.equal( [9,10,11] ) ;
-			expect( ndarray.getVector( [ 0 , null ] ) ).to.equal( [1,4,7,10,13] ) ;
-			ndarray.setVector( [ null , 1 ] , [101,102,103] ) ;
-			expect( ndarray.getVector( [ null , 1 ] ) ).to.equal( [101,102,103] ) ;
-			ndarray.setVector( 0 , null , [201,202,203,204,205] ) ;
-			expect( ndarray.getVector( 0 , null ) ).to.equal( [201,202,203,204,205] ) ;
-			expect( ndarray.storage ).to.equal( [
-				0,   201, 2,
-				3,   202, 5,
-				6,   203, 8,
-				101, 204, 103,
-				12,  205, 14
-			] ) ;
-		} ) ;
-
-		it( ".forEachVectorInRegion()" , function() {
-			let callArgs ;
-			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
-
-			// Iterate partially on x
-			callArgs = [] ;
-			ndarray.forEachVectorInRegion( [ [ 1 , 2 ] , null ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
-			expect( callArgs ).to.equal( [
-				[ [ 1, 5, 9, 13, 17 ], [ 1, 0 ], 1 ],
-				[ [ 2, 6, 10, 14, 18 ], [ 2, 0 ], 2 ]
-			] ) ;
-
-			// Iterate partially on y
-			callArgs = [] ;
-			ndarray.forEachVectorInRegion( [ null , [ 1 , 3 ] ] , ( vector , coords , index ) => callArgs.push( [ Array.from( vector ) , Array.from( coords ) , index ] ) ) ;
-			expect( callArgs ).to.equal( [
-				[ [ 4, 5, 6, 7 ], [ 0, 1 ], 4 ],
-				[ [ 8, 9, 10, 11 ], [ 0, 2 ], 8 ],
-				[ [ 12, 13, 14, 15 ], [ 0, 3 ], 12 ]
-			] ) ;
-		} ) ;
-	} ) ;
-
-	describe( "Misc" , function() {
-
-		it( ".fill()" , function() {
-			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
-			expect( ndarray.storage ).to.equal( [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14] ) ;
-			ndarray.fill( null ) ;
-			expect( ndarray.storage ).to.equal( [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null] ) ;
-			ndarray.fill( 0 ) ;
-			expect( ndarray.storage ).to.equal( [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] ) ;
-			ndarray.fill( 18 ) ;
-			expect( ndarray.storage ).to.equal( [18,18,18,18,18,18,18,18,18,18,18,18,18,18,18] ) ;
-			ndarray.fill( "bob" ) ;
-			expect( ndarray.storage ).to.equal( ["bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob","bob"] ) ;
-		} ) ;
-
-		it( ".fillInRegion()" , function() {
-			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
-			expect( ndarray.storage ).to.equal( [
-				0,    1,    2,
-				3,    4,    5,
-				6,    7,    8,
-				9,    10,   11,
-				12,   13,   14
-			] ) ;
-			ndarray.fillInRegion( [ [1,2],[1,3] ] , null ) ;
-			expect( ndarray.storage ).to.equal( [
-				0,    1,    2,
-				3,    null, null,
-				6,    null, null,
-				9,    null, null,
-				12,   13,   14
-			] ) ;
-		} ) ;
-	} ) ;
-	
 	describe( "Missing tests" , function() {
 		it( ".rebase()" ) ;
+		it( ".each*()" ) ;
 	} ) ;
 } ) ;
 
