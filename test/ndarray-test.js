@@ -761,9 +761,10 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 	} ) ;
 
-	describe( "Copying a ND-Array into another one: .copyTo()" , function() {
+	describe( "Copying a ND-Array into another one: .copyTo() / .copyWithin()" , function() {
+
 		it( "basic .copyTo()" , function() {
-			let ndarray , dstNdarray , mapped ;
+			let ndarray , dstNdarray ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			dstNdarray = new NDArray( new Array( 20 ).fill( null ) , [ 4 , 5 ] ) ;
@@ -776,6 +777,46 @@ describe( "ND-Arrays" , function() {
 				null, 0,    1,    2,
 				null, 4,    5,    6,
 				null, 8,    9,    10
+			] ) ;
+		} ) ;
+
+		it( "basic .copyWithin() without overlapping region" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.copyWithin( [ 2 , 3 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] ) ;
+			logDataStorage( ndarray.data , 4 ) ;
+			//return ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 0,  1,
+				16, 17, 4,  5
+			] ) ;
+		} ) ;
+
+		it( ".copyWithin() with overlapping region ahead" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.copyWithin( [ 1 , 1 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] ) ;
+			logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  0,  1,  2,
+				8,  4,  5,  6,
+				12, 8,  9,  10,
+				16, 17, 18, 19
+			] ) ;
+		} ) ;
+
+		it( ".copyWithin() with overlapping region behind" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.copyWithin( [ 0 , 0 ] , [ [ 1 , 3 ] , [ 2 , 4 ] ] ) ;
+			logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				9,  10, 11, 3,
+				13, 14, 15, 7,
+				17, 18, 19, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19
 			] ) ;
 		} ) ;
 	} ) ;
