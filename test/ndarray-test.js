@@ -783,8 +783,7 @@ describe( "ND-Arrays" , function() {
 		it( "basic .copyWithin() without overlapping region" , function() {
 			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			ndarray.copyWithin( [ 2 , 3 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] ) ;
-			logDataStorage( ndarray.data , 4 ) ;
-			//return ;
+			//logDataStorage( ndarray.data , 4 ) ;
 			expect( ndarray.data ).to.equal( [
 				0,  1,  2,  3,
 				4,  5,  6,  7,
@@ -797,7 +796,7 @@ describe( "ND-Arrays" , function() {
 		it( ".copyWithin() with overlapping region ahead" , function() {
 			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			ndarray.copyWithin( [ 1 , 1 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] ) ;
-			logDataStorage( ndarray.data , 4 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
 			expect( ndarray.data ).to.equal( [
 				0,  1,  2,  3,
 				4,  0,  1,  2,
@@ -810,7 +809,7 @@ describe( "ND-Arrays" , function() {
 		it( ".copyWithin() with overlapping region behind" , function() {
 			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			ndarray.copyWithin( [ 0 , 0 ] , [ [ 1 , 3 ] , [ 2 , 4 ] ] ) ;
-			logDataStorage( ndarray.data , 4 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
 			expect( ndarray.data ).to.equal( [
 				9,  10, 11, 3,
 				13, 14, 15, 7,
@@ -821,9 +820,9 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 	} ) ;
 
-	describe( "Combining a ND-Array into another one: .combineInto() / .combineVectorInto" , function() {
+	describe( "Combining a ND-Array into another one: .combineInto() / .combineVectorInto() / .combineWithin() / .combineVectorWithin()" , function() {
 		it( "basic .combineInto()" , function() {
-			let ndarray , dstNdarray , mapped ;
+			let ndarray , dstNdarray ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			dstNdarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
@@ -840,7 +839,7 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 
 		it( "basic .combineVectorInto()" , function() {
-			let ndarray , dstNdarray , mapped ;
+			let ndarray , dstNdarray ;
 
 			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 			dstNdarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
@@ -887,6 +886,93 @@ describe( "ND-Arrays" , function() {
 				128,  1153, 2180, 3209
 			] ) ;
 		} ) ;
+
+		it( "basic .combineWithin() without overlapping region" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineWithin( [ 2 , 3 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] , ( src , dst ) => src.value * dst.value ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 0,  15,
+				16, 17, 72, 95
+			] ) ;
+		} ) ;
+
+		it( ".combineWithin() with overlapping region ahead" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineWithin( [ 1 , 1 ] , [ [ 0 , 2 ] , [ 0 , 2 ] ] , ( src , dst ) => src.value * dst.value ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,    1,    2,    3,
+				4,    0,    6,    14,
+				8,    36,   50,   66,
+				12,   104,  126,  150,
+				16,   17,   18,   19
+			] ) ;
+		} ) ;
+
+		it( ".combineWithin() with overlapping region behind" , function() {
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineWithin( [ 0 , 0 ] , [ [ 1 , 3 ] , [ 2 , 4 ] ] , ( src , dst ) => src.value * dst.value ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,    10,   22,   3,
+				52,   70,   90,   7,
+				136,  162,  190,  11,
+				12,   13,   14,   15,
+				16,   17,   18,   19
+			] ) ;
+		} ) ;
+
+		it( "basic .combineVectorWithin()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineVectorWithin( [ 2 , null ] , [ [ 1 , 2 ] , null ] , ( src , dst ) => {
+				//console.log( "callback:" , { src , dst } ) ;
+				expect( src.value ).to.be.an( Array ) ;
+				expect( src.value ).to.have.length( 5 ) ;
+				
+				let output = new Array( 5 ) ;
+				for ( let d = 0 ; d < src.value.length ; d ++ ) {
+					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
+				}
+				return output ;
+			} ) ;
+			logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,    1,    2,    6,
+				4,    5,    1030, 1042,
+				8,    9,    2090, 2110,
+				12,   13,   3182, 3210,
+				16,   17,   4306, 4342
+			] ) ;
+
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.combineVectorWithin( [ null , 3 ] , [ null , [ 1 , 3 ] ] , ( src , dst ) => {
+				//console.log( "callback:" , { src , dst } ) ;
+				expect( src.value ).to.be.an( Array ) ;
+				expect( src.value ).to.have.length( 4 ) ;
+				
+				let output = new Array( 5 ) ;
+				for ( let d = 0 ; d < src.value.length ; d ++ ) {
+					output[ d ] = d * 1000 + src.value[ d ] * dst.value[ d ] ;
+				}
+				return output ;
+			} ) ;
+			//console.log( "dst:" , ndarray ) ;
+			expect( ndarray.data ).to.equal( [
+				0,    1,    2,    3,
+				4,    5,    6,    7,
+				8,    9,    10,   11,
+				48,   1065, 2084, 3105,
+				128,  1153, 2180, 3209
+			] ) ;
+		} ) ;
+
 	} ) ;
 
 	describe( "Missing tests" , function() {
