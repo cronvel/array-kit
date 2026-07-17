@@ -76,6 +76,24 @@ describe( "ND-Arrays" , function() {
 	
 	describe( "Basics" , function() {
 
+		it( "Internal properties (offset, sizes, strides, dataStart, dataEnd)" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( [] , [ 3 , 5 ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 3 , 5 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 3 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 15 ) ;
+
+			ndarray = new NDArray( [] , [ 3 , 5 , 6 ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 3 , 5 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 3 , 15 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 90 ) ;
+		} ) ;
+
 		it( "basic .getIndex()" , function() {
 			let ndarray = new NDArray( [] , [ 3 , 5 ] ) ;
 			expect( ndarray.getIndex( 0 , 0 ) ).to.be( 0 ) ;
