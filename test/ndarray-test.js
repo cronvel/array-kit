@@ -92,6 +92,13 @@ describe( "ND-Arrays" , function() {
 			expect( ndarray.strides ).to.equal( [ 1 , 3 , 15 ] ) ;
 			expect( ndarray.dataStart ).to.be( 0 ) ;
 			expect( ndarray.dataEnd ).to.be( 90 ) ;
+
+			ndarray = new NDArray( [] , [ 3 , 5 , 6 ] , { dataStart: 12 } ) ;
+			expect( ndarray.offset ).to.be( 12 ) ;
+			expect( ndarray.sizes ).to.equal( [ 3 , 5 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 3 , 15 ] ) ;
+			expect( ndarray.dataStart ).to.be( 12 ) ;
+			expect( ndarray.dataEnd ).to.be( 102 ) ;
 		} ) ;
 
 		it( "basic .getIndex()" , function() {
@@ -388,6 +395,31 @@ describe( "ND-Arrays" , function() {
 
 	describe( "Non-zero-based ND-arrays" , function() {
 
+		it( "Internal properties (offset, sizes, strides, dataStart, dataEnd)" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( [] , [ [ -3 , 3 ] , [ -5 , 5 ] ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 7 , 11 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 7 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 77 ) ;
+
+			ndarray = new NDArray( [] , [ [ -3 , 3 ] , [ -5 , 5 ] , [ 3 , 6 ] ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 7 , 11 , 4 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 7 , 77 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 308 ) ;
+
+			ndarray = new NDArray( [] , [ [ -3 , 3 ] , [ -5 , 5 ] , [ 3 , 6 ] ] , { dataStart: 15 } ) ;
+			expect( ndarray.offset ).to.be( 15 ) ;
+			expect( ndarray.sizes ).to.equal( [ 7 , 11 , 4 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 7 , 77 ] ) ;
+			expect( ndarray.dataStart ).to.be( 15 ) ;
+			expect( ndarray.dataEnd ).to.be( 323 ) ;
+		} ) ;
+
 		it( ".getIndex() on non-zero-based ND-array" , function() {
 			let ndarray = new NDArray( [] , [ [ -3 , 3 ] , [ -5 , 5 ] ] ) ;
 			expect( ndarray.getIndex( -3 , -5 ) ).to.be( 0 ) ;
@@ -484,6 +516,160 @@ describe( "ND-Arrays" , function() {
 				[ 14 , [ 2 , 1 ] , 14 ] ,
 			] ) ;
 		} ) ;
+	} ) ;
+
+	describe( "Backward stride and flipping the ND-arrays" , function() {
+
+		it( "Flipping an axis with .flip()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 5 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+
+			ndarray.flip( 1 ) ;
+			expect( ndarray.offset ).to.be( 20 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , -4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			
+			// The backend data has not changed
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 17 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 10 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 7 ) ;
+
+			ndarray.flip( 0 ) ;
+			expect( ndarray.offset ).to.be( 23 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ -1 , -4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			
+			// The backend data has not changed
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 18 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 9 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 4 ) ;
+
+			// Back to normal
+			ndarray.flip( 0 ).flip( 1 ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 5 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+		} ) ;
+
+		it( "Flipping all axis at once with .flipAll()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 5 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+
+			ndarray.flipAll() ;
+			expect( ndarray.offset ).to.be( 23 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ -1 , -4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			
+			// The backend data has not changed
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 18 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 9 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 4 ) ;
+
+			// Back to normal
+			ndarray.flipAll() ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 5 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+		} ) ;
+
+		it( "test .forEach()" ) ;
+		it( "test .forEachInRegion()" ) ;
+		it( "test .map()" ) ;
+		it( "test .mapInRegion()" ) ;
 	} ) ;
 
 	describe( "Getting vectors" , function() {
@@ -670,9 +856,9 @@ describe( "ND-Arrays" , function() {
 			mapped = ndarray.map( ( value , coords ) => coords[ 0 ] + coords[ 1 ] ) ;
 			expect( mapped.data ).to.equal( [ 0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 6 ] ) ;
 
-			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { offset: 3 } ) ;
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 3 , 5 ] , { dataStart: 3 } ) ;
 			mapped = ndarray.map( value => 2 * value ) ;
-			//console.log( "mapped:" , mapped.data.length , mapped ) ;
+			//logDataStorage( mapped.data , 3 ) ;
 			expect( mapped.data ).to.equal( [6,8,10,12,14,16,18,20,22,24,26,28,30,32,34] ) ;
 		} ) ;
 
@@ -1088,6 +1274,7 @@ describe( "ND-Arrays" , function() {
 
 	describe( "Missing tests" , function() {
 		it( ".rebase()" ) ;
+		it( ".translate()" ) ;
 		it( ".each*()" ) ;
 	} ) ;
 } ) ;
