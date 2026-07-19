@@ -673,6 +673,7 @@ describe( "ND-Arrays" , function() {
 
 			callArgs = [] ;
 			ndarray.forEach( ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			//console.log( "callArgs" , callArgs ) ;
 			expect( callArgs ).to.equal( [
 				[ 0 , [ 0 , 0 ] , 0 ] ,
 				[ 1 , [ 1 , 0 ] , 1 ] ,
@@ -694,28 +695,23 @@ describe( "ND-Arrays" , function() {
 			ndarray.flip( 1 ) ;
 			callArgs = [] ;
 			ndarray.forEach( ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
-			console.log( "callArgs" , callArgs ) ;
+			//console.log( "callArgs" , callArgs ) ;
 			expect( callArgs ).to.equal( [
-				[ 16, [ 0, 0 ], 16 ],
-				[ 17, [ 1, 0 ], 17 ],
-				[ 18, [ 2, 0 ], 18 ],
-				[ 19, [ 3, 0 ], 19 ],
-				[ 12, [ 0, 1 ], 12 ],
-				[ 13, [ 1, 1 ], 13 ],
-				[ 14, [ 2, 1 ], 14 ],
-				[ 15, [ 3, 1 ], 15 ],
-				[ 8, [ 0, 2 ], 8 ],
-				[ 9, [ 1, 2 ], 9 ],
-				[ 10, [ 2, 2 ], 10 ],
-				[ 11, [ 3, 2 ], 11 ],
-				[ 4, [ 0, 3 ], 4 ],
-				[ 5, [ 1, 3 ], 5 ],
-				[ 6, [ 2, 3 ], 6 ],
-				[ 7, [ 3, 3 ], 7 ],
+				[ 12, [ 0, 0 ], 12 ],
+				[ 13, [ 1, 0 ], 13 ],
+				[ 14, [ 2, 0 ], 14 ],
+				[ 9, [ 0, 1 ], 9 ],
+				[ 10, [ 1, 1 ], 10 ],
+				[ 11, [ 2, 1 ], 11 ],
+				[ 6, [ 0, 2 ], 6 ],
+				[ 7, [ 1, 2 ], 7 ],
+				[ 8, [ 2, 2 ], 8 ],
+				[ 3, [ 0, 3 ], 3 ],
+				[ 4, [ 1, 3 ], 4 ],
+				[ 5, [ 2, 3 ], 5 ],
 				[ 0, [ 0, 4 ], 0 ],
 				[ 1, [ 1, 4 ], 1 ],
-				[ 2, [ 2, 4 ], 2 ],
-				[ 3, [ 3, 4 ], 3 ]
+				[ 2, [ 2, 4 ], 2 ]
 			] ) ;
 		} ) ;
 
