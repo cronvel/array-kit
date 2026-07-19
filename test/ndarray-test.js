@@ -666,8 +666,104 @@ describe( "ND-Arrays" , function() {
 			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
 		} ) ;
 
-		it( "test .forEach()" ) ;
-		it( "test .forEachInRegion()" ) ;
+		it( ".forEach() order" , function() {
+			let ndarray , callArgs ;
+
+			ndarray = new NDArray( arrayKit.range( 15 ) , [ 3 , 5 ] ) ;
+
+			callArgs = [] ;
+			ndarray.forEach( ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 0 , [ 0 , 0 ] , 0 ] ,
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 3 , [ 0 , 1 ] , 3 ] ,
+				[ 4 , [ 1 , 1 ] , 4 ] ,
+				[ 5 , [ 2 , 1 ] , 5 ] ,
+				[ 6 , [ 0 , 2 ] , 6 ] ,
+				[ 7 , [ 1 , 2 ] , 7 ] ,
+				[ 8 , [ 2 , 2 ] , 8 ] ,
+				[ 9 , [ 0 , 3 ] , 9 ] ,
+				[ 10 , [ 1 , 3 ] , 10 ] ,
+				[ 11 , [ 2 , 3 ] , 11 ] ,
+				[ 12 , [ 0 , 4 ] , 12 ] ,
+				[ 13 , [ 1 , 4 ] , 13 ] ,
+				[ 14 , [ 2 , 4 ] , 14 ] ,
+			] ) ;
+
+			ndarray.flip( 1 ) ;
+			callArgs = [] ;
+			ndarray.forEach( ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			console.log( "callArgs" , callArgs ) ;
+			expect( callArgs ).to.equal( [
+				[ 16, [ 0, 0 ], 16 ],
+				[ 17, [ 1, 0 ], 17 ],
+				[ 18, [ 2, 0 ], 18 ],
+				[ 19, [ 3, 0 ], 19 ],
+				[ 12, [ 0, 1 ], 12 ],
+				[ 13, [ 1, 1 ], 13 ],
+				[ 14, [ 2, 1 ], 14 ],
+				[ 15, [ 3, 1 ], 15 ],
+				[ 8, [ 0, 2 ], 8 ],
+				[ 9, [ 1, 2 ], 9 ],
+				[ 10, [ 2, 2 ], 10 ],
+				[ 11, [ 3, 2 ], 11 ],
+				[ 4, [ 0, 3 ], 4 ],
+				[ 5, [ 1, 3 ], 5 ],
+				[ 6, [ 2, 3 ], 6 ],
+				[ 7, [ 3, 3 ], 7 ],
+				[ 0, [ 0, 4 ], 0 ],
+				[ 1, [ 1, 4 ], 1 ],
+				[ 2, [ 2, 4 ], 2 ],
+				[ 3, [ 3, 4 ], 3 ]
+			] ) ;
+		} ) ;
+
+		it( ".forEachInRegion()" , function() {
+			let ndarray , callArgs ;
+
+			ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+			ndarray.flip( 1 ) ;
+
+			// Iterate the whole array
+			callArgs = [] ;
+			ndarray.forEachInRegion( [ [ 0 , 3 ] , [ 0 , 4 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 16, [ 0, 0 ], 16 ],
+				[ 17, [ 1, 0 ], 17 ],
+				[ 18, [ 2, 0 ], 18 ],
+				[ 19, [ 3, 0 ], 19 ],
+				[ 12, [ 0, 1 ], 12 ],
+				[ 13, [ 1, 1 ], 13 ],
+				[ 14, [ 2, 1 ], 14 ],
+				[ 15, [ 3, 1 ], 15 ],
+				[ 8, [ 0, 2 ], 8 ],
+				[ 9, [ 1, 2 ], 9 ],
+				[ 10, [ 2, 2 ], 10 ],
+				[ 11, [ 3, 2 ], 11 ],
+				[ 4, [ 0, 3 ], 4 ],
+				[ 5, [ 1, 3 ], 5 ],
+				[ 6, [ 2, 3 ], 6 ],
+				[ 7, [ 3, 3 ], 7 ],
+				[ 0, [ 0, 4 ], 0 ],
+				[ 1, [ 1, 4 ], 1 ],
+				[ 2, [ 2, 4 ], 2 ],
+				[ 3, [ 3, 4 ], 3 ]
+			] ) ;
+
+			// Iterate partially on x and y
+			callArgs = [] ;
+			ndarray.forEachInRegion( [ [ 1 , 2 ] , [ 1 , 3 ] ] , ( value , coords , index ) => callArgs.push( [ value , Array.from( coords ) , index ] ) ) ;
+			expect( callArgs ).to.equal( [
+				[ 13, [ 1, 1 ], 13 ],
+				[ 14, [ 2, 1 ], 14 ],
+				[ 9, [ 1, 2 ], 9 ],
+				[ 10, [ 2, 2 ], 10 ],
+				[ 5, [ 1, 3 ], 5 ],
+				[ 6, [ 2, 3 ], 6 ]
+			] ) ;
+		} ) ;
+
 		it( "test .map()" ) ;
 		it( "test .mapInRegion()" ) ;
 	} ) ;
