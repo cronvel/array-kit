@@ -1459,6 +1459,156 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 	} ) ;
 
+	describe( "Cloning" , function() {
+
+		it( "cloning the view" , function() {
+			let ndarray , clone ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			clone = ndarray.view() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).to.be( ndarray.data ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( clone.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+		} ) ;
+
+		it( "full independant clone (data: Array)" , function() {
+			let ndarray , clone ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( clone.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -1 , 2 ] ] , { dataStart: 8 } ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 4 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 16 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( clone.data ).to.equal( [
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+		} ) ;
+
+		it( "full independant clone (data: Uint32Array)" , function() {
+			let ndarray , clone ;
+
+			ndarray = new NDArray( new Uint32Array( arrayKit.range( 24 ) ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.data ).to.be.a( Uint32Array ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( [ ... clone.data ] ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+
+			ndarray = new NDArray( new Uint32Array( arrayKit.range( 24 ) ) , [ [ -1 , 2 ] , [ -1 , 2 ] ] , { dataStart: 8 } ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.data ).to.be.a( Uint32Array ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 4 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 16 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( [ ... clone.data ] ).to.equal( [
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+		} ) ;
+
+		it( "full independant clone (data: Buffer)" , function() {
+			let ndarray , clone ;
+
+			ndarray = new NDArray( Buffer.from( arrayKit.range( 24 ) ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.data ).to.be.a( Buffer ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( [ ... clone.data ] ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+
+			ndarray = new NDArray( Buffer.from( arrayKit.range( 24 ) ) , [ [ -1 , 2 ] , [ -1 , 2 ] ] , { dataStart: 8 } ) ;
+			clone = ndarray.clone() ;
+			expect( clone ).not.to.be( ndarray ) ;
+			expect( clone.data ).not.to.be( ndarray.data ) ;
+			expect( clone.data ).to.be.a( Buffer ) ;
+			expect( clone.offset ).to.be( 0 ) ;
+			expect( clone.sizes ).to.equal( [ 4 , 4 ] ) ;
+			expect( clone.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( clone.dataStart ).to.be( 0 ) ;
+			expect( clone.dataEnd ).to.be( 16 ) ;
+			//logDataStorage( clone.data , 4 ) ;
+			expect( [ ... clone.data ] ).to.equal( [
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+		} ) ;
+	} ) ;
+
 	describe( "Missing tests" , function() {
 		it( ".rebase()" ) ;
 		it( ".translate()" ) ;
