@@ -518,7 +518,7 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 	} ) ;
 
-	describe( "Backward stride and flipping the ND-arrays" , function() {
+	describe( "Backward strides / flipping the ND-arrays" , function() {
 
 		it( "Flipping an axis with .flip()" , function() {
 			let ndarray ;
@@ -762,6 +762,94 @@ describe( "ND-Arrays" , function() {
 
 		it( "test .map()" ) ;
 		it( "test .mapInRegion()" ) ;
+	} ) ;
+
+	describe( "Transposition" , function() {
+
+		it( "Transpose 2D Array with .transpose()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 24 ) , [ [ -1 , 2 ] , [ -2 , 3 ] ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 4 , 6 ] ) ;
+			expect( ndarray.mins ).to.equal( [ -1 , -2 ] ) ;
+			expect( ndarray.maxs ).to.equal( [ 2 , 3 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 4 ] ) ;
+			expect( ndarray.order ).to.equal( [ 0 , 1 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			//logDataStorage( ndarray.data , 4 ) ;
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 5 ) ;
+			expect( ndarray.get( -1 , 0 ) ).to.be( 8 ) ;
+			expect( ndarray.get( 0 , 2 ) ).to.be( 17 ) ;
+			expect( ndarray.get( 2 , 0 ) ).to.be( 11 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+
+			ndarray.transpose( 1 , 0 ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 6 , 4 ] ) ;
+			expect( ndarray.mins ).to.equal( [ -2 , -1 ] ) ;
+			expect( ndarray.maxs ).to.equal( [ 3 , 2 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 4 , 1 ] ) ;
+			expect( ndarray.order ).to.equal( [ 1 , 0 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 24 ) ;
+			
+			// The backend data has not changed
+			expect( ndarray.data ).to.equal( [
+				0,  1,  2,  3,
+				4,  5,  6,  7,
+				8,  9,  10, 11,
+				12, 13, 14, 15,
+				16, 17, 18, 19,
+				20, 21, 22, 23
+			] ) ;
+			expect( ndarray.get( 0 , -1 ) ).to.be( 8 ) ;
+			expect( ndarray.get( -1 , 0 ) ).to.be( 5 ) ;
+			expect( ndarray.get( 0 , 2 ) ).to.be( 11 ) ;
+			expect( ndarray.get( 2 , 0 ) ).to.be( 17 ) ;
+			expect( ndarray.get( 1 , 1 ) ).to.be( 14 ) ;
+			expect( ndarray.get( 2 , 2 ) ).to.be( 19 ) ;
+		} ) ;
+
+		it( "Transpose 3D Array with .transpose()" , function() {
+			let ndarray ;
+
+			ndarray = new NDArray( arrayKit.range( 60 ) , [ 3 , 4 , 5 ] ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 3 , 4 , 5 ] ) ;
+			expect( ndarray.mins ).to.equal( [ 0 , 0 , 0 ] ) ;
+			expect( ndarray.maxs ).to.equal( [ 2 , 3 , 4 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 1 , 3 , 12 ] ) ;
+			expect( ndarray.order ).to.equal( [ 0 , 1 , 2 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 60 ) ;
+
+			expect( ndarray.get( 0 , 2 , 1 ) ).to.be( 18 ) ;
+			expect( ndarray.get( 2 , 2 , 1 ) ).to.be( 20 ) ;
+
+			ndarray.transpose( 2 , 0 , 1 ) ;
+			expect( ndarray.offset ).to.be( 0 ) ;
+			expect( ndarray.sizes ).to.equal( [ 5 , 3 , 4 ] ) ;
+			expect( ndarray.mins ).to.equal( [ 0 , 0 , 0 ] ) ;
+			expect( ndarray.maxs ).to.equal( [ 4 , 2 , 3 ] ) ;
+			expect( ndarray.strides ).to.equal( [ 12 , 1 , 3 ] ) ;
+			expect( ndarray.order ).to.equal( [ 2 , 0 , 1 ] ) ;
+			expect( ndarray.dataStart ).to.be( 0 ) ;
+			expect( ndarray.dataEnd ).to.be( 60 ) ;
+			
+			expect( ndarray.get( 1 , 0 , 2 ) ).to.be( 18 ) ;
+			expect( ndarray.get( 1 , 2 , 2 ) ).to.be( 20 ) ;
+		} ) ;
 	} ) ;
 
 	describe( "Reducing dimensions by fixing an axis" , function() {
