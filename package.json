@@ -4,7 +4,8 @@
   "description": "An array manipulation toolbox.",
   "main": "lib/array-kit.js",
   "directories": {
-    "test": "test"
+    "test": "test",
+    "bench": "bench"
   },
   "dependencies": {},
   "devDependencies": {},
