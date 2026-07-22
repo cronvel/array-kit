@@ -330,6 +330,9 @@ describe( "ND-Arrays" , function() {
 				[ 18 , [ 2 , 4 ] , 18 ] ,
 				[ 19 , [ 3 , 4 ] , 19 ] ,
 			] ) ;
+			// Check that subsequent call to next() returns false
+			expect( cursor.next() ).to.be( false ) ;
+			expect( cursor.next() ).to.be( false ) ;
 
 
 			// Iterate the whole array, with minmax
