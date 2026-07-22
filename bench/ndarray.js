@@ -153,10 +153,9 @@ benchmark( "iteration 1D" , () => {
 
 	competitor( "1D NDArray's cursor" , () => {
 		let output = 0 ;
-		let cursor = ndarray1d.getCursor() ;
-		let entry ;
-		while ( ( entry = cursor.next() ) ) {
-			output += entry.value ;
+		let cursor = ndarray1d.cursor() ;
+		while ( cursor.next() ) {
+			output += cursor.value ;
 		}
 		return output ;
 	} ) ;
@@ -203,10 +202,9 @@ benchmark( "iteration 2D" , () => {
 
 	competitor( "2D NDArray's cursor" , () => {
 		let output = 0 ;
-		let cursor = ndarray2d.getCursor() ;
-		let entry ;
-		while ( ( entry = cursor.next() ) ) {
-			output += entry.value ;
+		let cursor = ndarray2d.cursor() ;
+		while ( cursor.next() ) {
+			output += cursor.value ;
 		}
 		return output ;
 	} ) ;

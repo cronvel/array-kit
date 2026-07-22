@@ -299,14 +299,14 @@ describe( "ND-Arrays" , function() {
 		} ) ;
 
 		it( "basic cursor" , function() {
-			let callArgs , cursor , entry ;
+			let callArgs , cursor ;
 			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
 
 			// Iterate the whole array
 			callArgs = [] ;
-			cursor = ndarray.getCursor() ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor() ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			expect( callArgs ).to.equal( [
 				[ 0 , [ 0 , 0 ] , 0 ] ,
@@ -334,9 +334,9 @@ describe( "ND-Arrays" , function() {
 
 			// Iterate the whole array, with minmax
 			callArgs = [] ;
-			cursor = ndarray.getCursor( [ [ 0 , 3 ] , [ 0 , 4 ] ] ) ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor( [ [ 0 , 3 ] , [ 0 , 4 ] ] ) ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			expect( callArgs ).to.equal( [
 				[ 0 , [ 0 , 0 ] , 0 ] ,
@@ -364,9 +364,9 @@ describe( "ND-Arrays" , function() {
 
 			// Iterate partially on x
 			callArgs = [] ;
-			cursor = ndarray.getCursor( [ [ 1 , 2 ] , [ 0 , 4 ] ] ) ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor( [ [ 1 , 2 ] , [ 0 , 4 ] ] ) ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			//console.log( callArgs ) ; return ;
 			expect( callArgs ).to.equal( [
@@ -385,9 +385,9 @@ describe( "ND-Arrays" , function() {
 
 			// Iterate partially on y
 			callArgs = [] ;
-			cursor = ndarray.getCursor( [ [ 0 , 3 ] , [ 1 , 3 ] ] ) ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor( [ [ 0 , 3 ] , [ 1 , 3 ] ] ) ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			expect( callArgs ).to.equal( [
 				[ 4 , [ 0 , 1 ] , 4 ] ,
@@ -407,9 +407,9 @@ describe( "ND-Arrays" , function() {
 
 			// Iterate partially on x and y
 			callArgs = [] ;
-			cursor = ndarray.getCursor( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			expect( callArgs ).to.equal( [
 				[ 5 , [ 1 , 1 ] , 5 ] ,
@@ -422,9 +422,9 @@ describe( "ND-Arrays" , function() {
 
 			// Iterate partially on x and y, using the .forEachInRegion( mins , maxs , callback ) syntax
 			callArgs = [] ;
-			cursor = ndarray.getCursor( [ 1 , 1 ] , [ 2 , 3 ] ) ;
-			while ( ( entry = cursor.next() ) ) {
-				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			cursor = ndarray.cursor( [ 1 , 1 ] , [ 2 , 3 ] ) ;
+			while ( cursor.next() ) {
+				callArgs.push( [ cursor.value , Array.from( cursor.coords ) , cursor.index ] ) ;
 			}
 			expect( callArgs ).to.equal( [
 				[ 5 , [ 1 , 1 ] , 5 ] ,
