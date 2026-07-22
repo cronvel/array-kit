@@ -150,6 +150,16 @@ benchmark( "iteration 1D" , () => {
 		}
 		return output ;
 	} ) ;
+
+	competitor( "1D NDArray's cursor" , () => {
+		let output = 0 ;
+		let cursor = ndarray1d.getCursor() ;
+		let entry ;
+		while ( ( entry = cursor.next() ) ) {
+			output += entry.value ;
+		}
+		return output ;
+	} ) ;
 } ) ;
 
 
@@ -158,6 +168,18 @@ benchmark( "iteration 2D" , () => {
 	const data = range( 10000 ) ;
 	const simplest2d = new Simplest2D( data , 100 , 100 ) ;
 	const ndarray2d = new NDArray( data , [ 100 , 100 ] ) ;
+	
+	competitor( "Array's manual double for loop" , () => {
+		let output = 0 ;
+		
+		for ( let x = 0 ; x < 100 ; x ++ ) {
+			for ( let y = 0 ; y < 100 ; y ++ ) {
+				output += data[ y * 100 + x ] ;
+			}
+		}
+
+		return output ;
+	} ) ;
 	
 	competitor( "Simplest 2D interpretation of Array's .forEach()" , () => {
 		let output = 0 ;
@@ -175,6 +197,16 @@ benchmark( "iteration 2D" , () => {
 		let output = 0 ;
 		for ( let { value } of ndarray2d.each() ) {
 			output += value ;
+		}
+		return output ;
+	} ) ;
+
+	competitor( "2D NDArray's cursor" , () => {
+		let output = 0 ;
+		let cursor = ndarray2d.getCursor() ;
+		let entry ;
+		while ( ( entry = cursor.next() ) ) {
+			output += entry.value ;
 		}
 		return output ;
 	} ) ;

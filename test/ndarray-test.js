@@ -297,6 +297,150 @@ describe( "ND-Arrays" , function() {
 			expect( () => ndarray.forEachInRegion( [ [ 1 , 3 ] , [ 3 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
 			expect( () => ndarray.forEachInRegion( [ [ 1 , 0 ] , [ 1 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
 		} ) ;
+
+		it( "basic cursor" , function() {
+			let callArgs , cursor , entry ;
+			let ndarray = new NDArray( arrayKit.range( 20 ) , [ 4 , 5 ] ) ;
+
+			// Iterate the whole array
+			callArgs = [] ;
+			cursor = ndarray.getCursor() ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			expect( callArgs ).to.equal( [
+				[ 0 , [ 0 , 0 ] , 0 ] ,
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 3 , [ 3 , 0 ] , 3 ] ,
+				[ 4 , [ 0 , 1 ] , 4 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 7 , [ 3 , 1 ] , 7 ] ,
+				[ 8 , [ 0 , 2 ] , 8 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 11 , [ 3 , 2 ] , 11 ] ,
+				[ 12 , [ 0 , 3 ] , 12 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 15 , [ 3 , 3 ] , 15 ] ,
+				[ 16 , [ 0 , 4 ] , 16 ] ,
+				[ 17 , [ 1 , 4 ] , 17 ] ,
+				[ 18 , [ 2 , 4 ] , 18 ] ,
+				[ 19 , [ 3 , 4 ] , 19 ] ,
+			] ) ;
+
+
+			// Iterate the whole array, with minmax
+			callArgs = [] ;
+			cursor = ndarray.getCursor( [ [ 0 , 3 ] , [ 0 , 4 ] ] ) ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			expect( callArgs ).to.equal( [
+				[ 0 , [ 0 , 0 ] , 0 ] ,
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 3 , [ 3 , 0 ] , 3 ] ,
+				[ 4 , [ 0 , 1 ] , 4 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 7 , [ 3 , 1 ] , 7 ] ,
+				[ 8 , [ 0 , 2 ] , 8 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 11 , [ 3 , 2 ] , 11 ] ,
+				[ 12 , [ 0 , 3 ] , 12 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 15 , [ 3 , 3 ] , 15 ] ,
+				[ 16 , [ 0 , 4 ] , 16 ] ,
+				[ 17 , [ 1 , 4 ] , 17 ] ,
+				[ 18 , [ 2 , 4 ] , 18 ] ,
+				[ 19 , [ 3 , 4 ] , 19 ] ,
+			] ) ;
+
+
+			// Iterate partially on x
+			callArgs = [] ;
+			cursor = ndarray.getCursor( [ [ 1 , 2 ] , [ 0 , 4 ] ] ) ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			//console.log( callArgs ) ; return ;
+			expect( callArgs ).to.equal( [
+				[ 1 , [ 1 , 0 ] , 1 ] ,
+				[ 2 , [ 2 , 0 ] , 2 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 17 , [ 1 , 4 ] , 17 ] ,
+				[ 18 , [ 2 , 4 ] , 18 ] ,
+			] ) ;
+
+
+			// Iterate partially on y
+			callArgs = [] ;
+			cursor = ndarray.getCursor( [ [ 0 , 3 ] , [ 1 , 3 ] ] ) ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			expect( callArgs ).to.equal( [
+				[ 4 , [ 0 , 1 ] , 4 ] ,
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 7 , [ 3 , 1 ] , 7 ] ,
+				[ 8 , [ 0 , 2 ] , 8 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 11 , [ 3 , 2 ] , 11 ] ,
+				[ 12 , [ 0 , 3 ] , 12 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+				[ 15 , [ 3 , 3 ] , 15 ] ,
+			] ) ;
+
+
+			// Iterate partially on x and y
+			callArgs = [] ;
+			cursor = ndarray.getCursor( [ [ 1 , 2 ] , [ 1 , 3 ] ] ) ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			expect( callArgs ).to.equal( [
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+			] ) ;
+
+			// Iterate partially on x and y, using the .forEachInRegion( mins , maxs , callback ) syntax
+			callArgs = [] ;
+			cursor = ndarray.getCursor( [ 1 , 1 ] , [ 2 , 3 ] ) ;
+			while ( ( entry = cursor.next() ) ) {
+				callArgs.push( [ entry.value , Array.from( entry.coords ) , entry.index ] ) ;
+			}
+			expect( callArgs ).to.equal( [
+				[ 5 , [ 1 , 1 ] , 5 ] ,
+				[ 6 , [ 2 , 1 ] , 6 ] ,
+				[ 9 , [ 1 , 2 ] , 9 ] ,
+				[ 10 , [ 2 , 2 ] , 10 ] ,
+				[ 13 , [ 1 , 3 ] , 13 ] ,
+				[ 14 , [ 2 , 3 ] , 14 ] ,
+			] ) ;
+			return ;
+			// Range errors
+			expect( () => ndarray.forEachInRegion( [ 1 , 1 ] , [ 4 , 3 ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInRegion( [ [ 1 , 3 ] , [ 3 , 5 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInRegion( [ [ 1 , 3 ] , [ 3 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+			expect( () => ndarray.forEachInRegion( [ [ 1 , 0 ] , [ 1 , 2 ] ] , () => null ) ).to.throw.a( RangeError ) ;
+		} ) ;
 	} ) ;
 
 	describe( "ND-arrays with changed order" , function() {
