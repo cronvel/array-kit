@@ -76,16 +76,33 @@ benchmark( "get values 1D" , () => {
 	competitor( "ndarray's ._get()" , () => {
 		let output = 0 ;
 
-		output += ndarray._get( [ 0 ] ) ;
-		output += ndarray._get( [ 9999 ] ) ;
-		output += ndarray._get( [ 1234 ] ) ;
-		output += ndarray._get( [ 2345 ] ) ;
-		output += ndarray._get( [ 4567 ] ) ;
-		output += ndarray._get( [ 6789 ] ) ;
-		output += ndarray._get( [ 9876 ] ) ;
-		output += ndarray._get( [ 7654 ] ) ;
-		output += ndarray._get( [ 5432 ] ) ;
-		output += ndarray._get( [ 4321 ] ) ;
+		output += ndarray._get( 0 ) ;
+		output += ndarray._get( 9999 ) ;
+		output += ndarray._get( 1234 ) ;
+		output += ndarray._get( 2345 ) ;
+		output += ndarray._get( 4567 ) ;
+		output += ndarray._get( 6789 ) ;
+		output += ndarray._get( 9876 ) ;
+		output += ndarray._get( 7654 ) ;
+		output += ndarray._get( 5432 ) ;
+		output += ndarray._get( 4321 ) ;
+
+		return output ;
+	} ) ;
+
+	competitor( "ndarray's ._getAt()" , () => {
+		let output = 0 ;
+
+		output += ndarray._getAt( [ 0 ] ) ;
+		output += ndarray._getAt( [ 9999 ] ) ;
+		output += ndarray._getAt( [ 1234 ] ) ;
+		output += ndarray._getAt( [ 2345 ] ) ;
+		output += ndarray._getAt( [ 4567 ] ) ;
+		output += ndarray._getAt( [ 6789 ] ) ;
+		output += ndarray._getAt( [ 9876 ] ) ;
+		output += ndarray._getAt( [ 7654 ] ) ;
+		output += ndarray._getAt( [ 5432 ] ) ;
+		output += ndarray._getAt( [ 4321 ] ) ;
 
 		return output ;
 	} ) ;
@@ -113,7 +130,6 @@ benchmark( "get values 1D" , () => {
 benchmark( "get values 2D" , () => {
 	const data = arrayKit.range( 10000 ) ;
 	const simplest2d = new Simplest2D( data , 100 , 100 ) ;
-	const ndarray = arrayKit.ndarray( data , [ 100 , 100 ] ) ;
 	const arrayND = new arrayKit.ArrayND( data , [ 100 , 100 ] ) ;
 	const array2D = new arrayKit.Array2D( data , [ 100 , 100 ] ) ;
 	const foreignNdarray = ndarrayModule( data , [ 100 , 100 ] ) ;
@@ -135,41 +151,7 @@ benchmark( "get values 2D" , () => {
 		return output ;
 	} ) ;
 	
-	competitor( "ndarray's .get()" , () => {
-		let output = 0 ;
-
-		output += ndarray.get( 0 , 0 ) ;
-		output += ndarray.get( 99 , 99 ) ;
-		output += ndarray.get( 12 , 34 ) ;
-		output += ndarray.get( 23 , 45 ) ;
-		output += ndarray.get( 45 , 67 ) ;
-		output += ndarray.get( 67 , 89 ) ;
-		output += ndarray.get( 98 , 76 ) ;
-		output += ndarray.get( 76 , 54 ) ;
-		output += ndarray.get( 54 , 32 ) ;
-		output += ndarray.get( 43 , 21 ) ;
-
-		return output ;
-	} ) ;
-	
-	competitor( "ndarray's ._get()" , () => {
-		let output = 0 ;
-
-		output += ndarray._get( [ 0 , 0 ] ) ;
-		output += ndarray._get( [ 99 , 99 ] ) ;
-		output += ndarray._get( [ 12 , 34 ] ) ;
-		output += ndarray._get( [ 23 , 45 ] ) ;
-		output += ndarray._get( [ 45 , 67 ] ) ;
-		output += ndarray._get( [ 67 , 89 ] ) ;
-		output += ndarray._get( [ 98 , 76 ] ) ;
-		output += ndarray._get( [ 76 , 54 ] ) ;
-		output += ndarray._get( [ 54 , 32 ] ) ;
-		output += ndarray._get( [ 43 , 21 ] ) ;
-
-		return output ;
-	} ) ;
-	
-	competitor( "Array2D's .get()" , () => {
+	competitor( "Array2D (default) 's .get()" , () => {
 		let output = 0 ;
 
 		output += array2D.get( 0 , 0 ) ;
@@ -186,36 +168,36 @@ benchmark( "get values 2D" , () => {
 		return output ;
 	} ) ;
 	
-	competitor( "Array2D's .getxy() [TMP]" , () => {
+	competitor( "Array2D (default) 's ._get()" , () => {
 		let output = 0 ;
 
-		output += array2D.getxy( 0 , 0 ) ;
-		output += array2D.getxy( 99 , 99 ) ;
-		output += array2D.getxy( 12 , 34 ) ;
-		output += array2D.getxy( 23 , 45 ) ;
-		output += array2D.getxy( 45 , 67 ) ;
-		output += array2D.getxy( 67 , 89 ) ;
-		output += array2D.getxy( 98 , 76 ) ;
-		output += array2D.getxy( 76 , 54 ) ;
-		output += array2D.getxy( 54 , 32 ) ;
-		output += array2D.getxy( 43 , 21 ) ;
+		output += array2D._get( 0 , 0 ) ;
+		output += array2D._get( 99 , 99 ) ;
+		output += array2D._get( 12 , 34 ) ;
+		output += array2D._get( 23 , 45 ) ;
+		output += array2D._get( 45 , 67 ) ;
+		output += array2D._get( 67 , 89 ) ;
+		output += array2D._get( 98 , 76 ) ;
+		output += array2D._get( 76 , 54 ) ;
+		output += array2D._get( 54 , 32 ) ;
+		output += array2D._get( 43 , 21 ) ;
 
 		return output ;
 	} ) ;
 	
-	competitor( "Array2D's ._get()" , () => {
+	competitor( "Array2D (default) 's ._getAt()" , () => {
 		let output = 0 ;
 
-		output += array2D._get( [ 0 , 0 ] ) ;
-		output += array2D._get( [ 99 , 99 ] ) ;
-		output += array2D._get( [ 12 , 34 ] ) ;
-		output += array2D._get( [ 23 , 45 ] ) ;
-		output += array2D._get( [ 45 , 67 ] ) ;
-		output += array2D._get( [ 67 , 89 ] ) ;
-		output += array2D._get( [ 98 , 76 ] ) ;
-		output += array2D._get( [ 76 , 54 ] ) ;
-		output += array2D._get( [ 54 , 32 ] ) ;
-		output += array2D._get( [ 43 , 21 ] ) ;
+		output += array2D._getAt( [ 0 , 0 ] ) ;
+		output += array2D._getAt( [ 99 , 99 ] ) ;
+		output += array2D._getAt( [ 12 , 34 ] ) ;
+		output += array2D._getAt( [ 23 , 45 ] ) ;
+		output += array2D._getAt( [ 45 , 67 ] ) ;
+		output += array2D._getAt( [ 67 , 89 ] ) ;
+		output += array2D._getAt( [ 98 , 76 ] ) ;
+		output += array2D._getAt( [ 76 , 54 ] ) ;
+		output += array2D._getAt( [ 54 , 32 ] ) ;
+		output += array2D._getAt( [ 43 , 21 ] ) ;
 
 		return output ;
 	} ) ;
@@ -240,16 +222,33 @@ benchmark( "get values 2D" , () => {
 	competitor( "ArrayND's ._get()" , () => {
 		let output = 0 ;
 
-		output += arrayND._get( [ 0 , 0 ] ) ;
-		output += arrayND._get( [ 99 , 99 ] ) ;
-		output += arrayND._get( [ 12 , 34 ] ) ;
-		output += arrayND._get( [ 23 , 45 ] ) ;
-		output += arrayND._get( [ 45 , 67 ] ) ;
-		output += arrayND._get( [ 67 , 89 ] ) ;
-		output += arrayND._get( [ 98 , 76 ] ) ;
-		output += arrayND._get( [ 76 , 54 ] ) ;
-		output += arrayND._get( [ 54 , 32 ] ) ;
-		output += arrayND._get( [ 43 , 21 ] ) ;
+		output += arrayND._get( 0 , 0 ) ;
+		output += arrayND._get( 99 , 99 ) ;
+		output += arrayND._get( 12 , 34 ) ;
+		output += arrayND._get( 23 , 45 ) ;
+		output += arrayND._get( 45 , 67 ) ;
+		output += arrayND._get( 67 , 89 ) ;
+		output += arrayND._get( 98 , 76 ) ;
+		output += arrayND._get( 76 , 54 ) ;
+		output += arrayND._get( 54 , 32 ) ;
+		output += arrayND._get( 43 , 21 ) ;
+
+		return output ;
+	} ) ;
+	
+	competitor( "ArrayND's ._getAt()" , () => {
+		let output = 0 ;
+
+		output += arrayND._getAt( [ 0 , 0 ] ) ;
+		output += arrayND._getAt( [ 99 , 99 ] ) ;
+		output += arrayND._getAt( [ 12 , 34 ] ) ;
+		output += arrayND._getAt( [ 23 , 45 ] ) ;
+		output += arrayND._getAt( [ 45 , 67 ] ) ;
+		output += arrayND._getAt( [ 67 , 89 ] ) ;
+		output += arrayND._getAt( [ 98 , 76 ] ) ;
+		output += arrayND._getAt( [ 76 , 54 ] ) ;
+		output += arrayND._getAt( [ 54 , 32 ] ) ;
+		output += arrayND._getAt( [ 43 , 21 ] ) ;
 
 		return output ;
 	} ) ;
@@ -324,7 +323,7 @@ benchmark( "iteration 1D" , () => {
 		let output = 0 ;
 		
 		for ( let x = 0 ; x < 10000 ; x ++ ) {
-			output += ndarray._get( [ x ] ) ;
+			output += ndarray._get( x ) ;
 		}
 
 		return output ;
@@ -347,6 +346,8 @@ benchmark( "iteration 2D" , () => {
 	const data = arrayKit.range( 10000 ) ;
 	const simplest2d = new Simplest2D( data , 100 , 100 ) ;
 	const ndarray = arrayKit.ndarray( data , [ 100 , 100 ] ) ;
+	const arrayND = new arrayKit.ArrayND( data , [ 100 , 100 ] ) ;
+	const array2D = new arrayKit.Array2D( data , [ 100 , 100 ] ) ;
 	const foreignNdarray = ndarrayModule( data , [ 100 , 100 ] ) ;
 	
 	competitor( "double loop and Array index" , () => {
@@ -411,7 +412,7 @@ benchmark( "iteration 2D" , () => {
 		
 		for ( let x = 0 ; x < 100 ; x ++ ) {
 			for ( let y = 0 ; y < 100 ; y ++ ) {
-				output += ndarray._get( [ x , y ] ) ;
+				output += ndarray._get( x , y ) ;
 			}
 		}
 
@@ -490,7 +491,7 @@ benchmark( "iteration 4D" , () => {
 			for ( let y = 0 ; y < 10 ; y ++ ) {
 				for ( let z = 0 ; z < 10 ; z ++ ) {
 					for ( let w = 0 ; w < 10 ; w ++ ) {
-						output += ndarray._get( [ x , y , z , w ] ) ;
+						output += ndarray._get( x , y , z , w ) ;
 					}
 				}
 			}
