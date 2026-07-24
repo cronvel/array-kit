@@ -300,9 +300,18 @@ benchmark( "iteration 1D" , () => {
 		return output ;
 	} ) ;
 
-	competitor( "ndarray's cursor" , () => {
+	competitor( "ndarray's .cursor()" , () => {
 		let output = 0 ;
 		let cursor = ndarray.cursor() ;
+		while ( cursor.next() ) {
+			output += cursor.value ;
+		}
+		return output ;
+	} ) ;
+
+	competitor( "ndarray's ._cursor()" , () => {
+		let output = 0 ;
+		let cursor = ndarray._cursor() ;
 		while ( cursor.next() ) {
 			output += cursor.value ;
 		}
@@ -386,9 +395,18 @@ benchmark( "iteration 2D" , () => {
 		return output ;
 	} ) ;
 
-	competitor( "ndarray's cursor" , () => {
+	competitor( "ndarray's .cursor()" , () => {
 		let output = 0 ;
 		let cursor = ndarray.cursor() ;
+		while ( cursor.next() ) {
+			output += cursor.value ;
+		}
+		return output ;
+	} ) ;
+
+	competitor( "ndarray's ._cursor()" , () => {
+		let output = 0 ;
+		let cursor = ndarray._cursor() ;
 		while ( cursor.next() ) {
 			output += cursor.value ;
 		}
@@ -459,9 +477,18 @@ benchmark( "iteration 4D" , () => {
 		return output ;
 	} ) ;
 
-	competitor( "ndarray's cursor" , () => {
+	competitor( "ndarray's .cursor()" , () => {
 		let output = 0 ;
 		let cursor = ndarray.cursor() ;
+		while ( cursor.next() ) {
+			output += cursor.value ;
+		}
+		return output ;
+	} ) ;
+
+	competitor( "ndarray's ._cursor()" , () => {
+		let output = 0 ;
+		let cursor = ndarray._cursor() ;
 		while ( cursor.next() ) {
 			output += cursor.value ;
 		}
